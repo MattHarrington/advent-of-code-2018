@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="270c07ab-7541-44a9-943b-b8cfb6769ec6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/advent_of_code_2018.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/advent_of_code_2018_test.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/day11/day11.dart" beforeDir="false" afterPath="$PROJECT_DIR$/bin/day11/day11.dart" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -18,21 +17,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/day11/day11.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="990">
-              <caret line="73" column="17" selection-start-line="73" selection-start-column="17" selection-end-line="73" selection-end-column="17" />
+            <state relative-caret-position="198">
+              <caret line="61" column="42" selection-start-line="61" selection-start-column="42" selection-end-line="61" selection-end-column="42" />
               <folding>
                 <element signature="n#!!block;n#Coordinate#0" />
-                <element signature="e#1818#2061#0" />
-                <element signature="e#4011#4296#0" />
-                <element signature="e#4315#4805#0" />
-                <element signature="e#4824#5314#0" />
-                <element signature="e#4933#5100#0" />
-                <element signature="e#5145#5312#0" />
-                <element signature="e#5042#5312#0" />
               </folding>
             </state>
           </provider>
@@ -81,10 +73,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="793" />
-    <option name="y" value="248" />
-    <option name="width" value="1400" />
-    <option name="height" value="1000" />
+    <option name="x" value="1987" />
+    <option name="y" value="25" />
+    <option name="width" value="1853" />
+    <option name="height" value="1175" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -152,9 +144,10 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin/day11" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="dart.settings" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -249,31 +242,32 @@
       <option name="presentableId" value="Default" />
       <updated>1544563177349</updated>
       <workItem from="1544563179693" duration="9332000" />
+      <workItem from="1544578562777" duration="2925000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9332000" />
+    <option name="totallyTimeSpent" value="12257000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
+    <frame x="1987" y="25" width="1853" height="1175" extended-state="6" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13041764" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13497268" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Dart Analysis" weight="0.32969603" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" weight="0.32969603" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32969603" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32969603" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3288719" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3998441" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Dart Analysis" order="7" weight="0.32969603" />
+      <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.3288719" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -283,21 +277,9 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/advent_of_code_2018.dart">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/main.dart">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/advent_of_code_2018_test.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#62#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/advent_of_code_2018.dart" />
+    <entry file="file://$PROJECT_DIR$/bin/main.dart" />
+    <entry file="file://$PROJECT_DIR$/test/advent_of_code_2018_test.dart" />
     <entry file="file://$PROJECT_DIR$/bin/day1/day_1_input.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="772">
@@ -424,9 +406,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pubspec.lock">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/pubspec.lock" />
     <entry file="file://$PROJECT_DIR$/pubspec.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
@@ -502,17 +482,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/day11/day11.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="990">
-          <caret line="73" column="17" selection-start-line="73" selection-start-column="17" selection-end-line="73" selection-end-column="17" />
+        <state relative-caret-position="198">
+          <caret line="61" column="42" selection-start-line="61" selection-start-column="42" selection-end-line="61" selection-end-column="42" />
           <folding>
             <element signature="n#!!block;n#Coordinate#0" />
-            <element signature="e#1818#2061#0" />
-            <element signature="e#4011#4296#0" />
-            <element signature="e#4315#4805#0" />
-            <element signature="e#4824#5314#0" />
-            <element signature="e#4933#5100#0" />
-            <element signature="e#5145#5312#0" />
-            <element signature="e#5042#5312#0" />
           </folding>
         </state>
       </provider>

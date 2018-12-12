@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-const DEBUG = true;
+const DEBUG = false;
 const puzzle_input = 9995;
 
 class Coordinate {
@@ -33,6 +33,9 @@ class Coordinate {
 }
 
 main() {
+  var sw = Stopwatch();
+  sw.start();
+
   if (DEBUG) {
     testPowerLevels();
     testGridSerialNumber18();
@@ -46,21 +49,20 @@ main() {
 
   // Part one
 
-  var partOneAnswer = getGridMaxValue(
-      computePatchGrid(patchSize: 3, serialNumber: puzzle_input));
+  var partOneAnswer = getGridMaxValue(computePatches(grid, patchSize: 3));
   assert(partOneAnswer == Coordinate(33, 45, 29));
   print("Part one answer: ${partOneAnswer}");
 
   // Part two
 
-  var partTwoMax = -1000000;
+  var partTwoMax = -1000000; // TODO use min() instead
   Coordinate partTwoAnswer;
   var largestPatchSize = 0;
   stdout.write("Patch size: ");
-  for (var patchSize = 1; patchSize <= 20; ++patchSize) {
+  for (var patchSize = 1; patchSize <= 299; ++patchSize) {
+    // TODO fails with 300
     stdout.write("${patchSize},");
-    var p = getGridMaxValue(
-        computePatchGrid(patchSize: patchSize, serialNumber: puzzle_input));
+    var p = getGridMaxValue(computePatches(grid, patchSize: patchSize));
     if (p.powerLevel > partTwoMax) {
       partTwoMax = p.powerLevel;
       partTwoAnswer = p;
@@ -72,10 +74,14 @@ main() {
       partTwoAnswer.y == 116 &&
       largestPatchSize == 15);
   print("Part two answer: ${partTwoAnswer}, Patch size: ${largestPatchSize}");
+
+  sw.stop();
+  print("\nElapsed seconds: ${sw.elapsedMilliseconds / 1000}");
 }
 
+/// Compute power level at (x,y) for a given serial number
 int computePowerLevel(int x, int y, {int serialNumber}) {
-  var rackId = x + 10;
+  final rackId = x + 10;
   var powerLevel = rackId * y;
   powerLevel += serialNumber;
   powerLevel *= rackId;
@@ -85,6 +91,7 @@ int computePowerLevel(int x, int y, {int serialNumber}) {
   return powerLevel;
 }
 
+/// Return a grid for a given serial number
 List<List<int>> generateGrid({int serialNumber}) {
   const int rows = 300;
   const int columns = 300;
@@ -98,11 +105,12 @@ List<List<int>> generateGrid({int serialNumber}) {
   return grid;
 }
 
-List<List<int>> computePatchGrid({int patchSize, int serialNumber}) {
-  final rows = 300 - patchSize;
+/// Return a grid of max values for a given grid and given patch size
+List<List<int>> computePatches(List<List<int>> grid, {int patchSize}) {
+  final rows = 300 - patchSize; // TODO is this correct?
   final columns = 300 - patchSize;
   var patchGrid = List.generate(rows, (_) => new List<int>.filled(columns, 0));
-  var grid = generateGrid(serialNumber: serialNumber);
+//  var grid = generateGrid(serialNumber: serialNumber);
   for (var y = 0; y < columns; ++y) {
     for (var x = 0; x < rows; ++x) {
       for (var patchY = 0; patchY < patchSize; ++patchY) {
@@ -115,9 +123,10 @@ List<List<int>> computePatchGrid({int patchSize, int serialNumber}) {
   return patchGrid;
 }
 
+/// Find coordinate with maximum power level in a given grid
 Coordinate getGridMaxValue(List<List<int>> grid) {
-  var columns = grid.length;
-  var rows = grid.first.length;
+  final columns = grid.length;
+  final rows = grid.first.length;
   var maxPowerLevel = -1000000;
   var xMax, yMax;
   for (var y = 0; y < columns; ++y) {
@@ -170,23 +179,24 @@ void testGridSerialNumber42() {
 
 void testSerialNumber18LargestPatchValue() {
   // Example from problem description
-  var pg = computePatchGrid(patchSize: 3, serialNumber: 18);
+  final grid = generateGrid(serialNumber: 18);
+  var pg = computePatches(grid, patchSize: 3);
   var max = getGridMaxValue(pg);
   assert(max.powerLevel == 29);
 }
 
 void testSerialNumber42LargestPatchValue() {
   // Example from problem description
-  var pg = computePatchGrid(patchSize: 3, serialNumber: 42);
+  final grid = generateGrid(serialNumber: 42);
+  var pg = computePatches(grid, patchSize: 3);
   var max = getGridMaxValue(pg);
   assert(max.powerLevel == 30);
 }
 
 void testEqualityOverride() {
   // Tests that @override of == in Coordinate is correct
-  var a1 = getGridMaxValue(
-      computePatchGrid(patchSize: 3, serialNumber: puzzle_input));
-  var a2 = getGridMaxValue(
-      computePatchGrid(patchSize: 3, serialNumber: puzzle_input));
+  final grid = generateGrid(serialNumber: puzzle_input);
+  var a1 = getGridMaxValue(computePatches(grid, patchSize: 3));
+  var a2 = getGridMaxValue(computePatches(grid, patchSize: 3));
   assert(a1 == a2);
 }
