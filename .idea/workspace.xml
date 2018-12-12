@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="270c07ab-7541-44a9-943b-b8cfb6769ec6" name="Default Changelist" comment="" />
+    <list default="true" id="270c07ab-7541-44a9-943b-b8cfb6769ec6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bin/main.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/advent_of_code_2018.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/advent_of_code_2018_test.dart" beforeDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -13,25 +19,66 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pubspec.yaml">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bin/main.dart">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/bin/day11/day11.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="990">
+              <caret line="73" column="17" selection-start-line="73" selection-start-column="17" selection-end-line="73" selection-end-column="17" />
+              <folding>
+                <element signature="n#!!block;n#Coordinate#0" />
+                <element signature="e#1818#2061#0" />
+                <element signature="e#4011#4296#0" />
+                <element signature="e#4315#4805#0" />
+                <element signature="e#4824#5314#0" />
+                <element signature="e#4933#5100#0" />
+                <element signature="e#5145#5312#0" />
+                <element signature="e#5042#5312#0" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/bin/day1/day_1_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day1/day1.dart" />
+        <option value="$PROJECT_DIR$/bin/day2/day_2_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day2/day2.dart" />
+        <option value="$PROJECT_DIR$/bin/day3/day3.dart" />
+        <option value="$PROJECT_DIR$/bin/day3/day_3_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day4/day4.dart" />
+        <option value="$PROJECT_DIR$/bin/day4/day_4_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day5/day_5_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day5/day5.dart" />
+        <option value="$PROJECT_DIR$/bin/day6/day_6_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day6/day_6_sample_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day6/day6.dart" />
+        <option value="$PROJECT_DIR$/bin/day7/day_7_sample_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day7/day_7_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day7/day7.dart" />
+        <option value="$PROJECT_DIR$/bin/day8/day8.dart" />
+        <option value="$PROJECT_DIR$/bin/day8/day_8_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day9/day9.dart" />
+        <option value="$PROJECT_DIR$/bin/day10/day_10_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day10/day_10_sample_input.txt" />
+        <option value="$PROJECT_DIR$/bin/day10/day10.dart" />
+        <option value="$PROJECT_DIR$/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/bin/day11/day11.dart" />
+      </list>
+    </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="793" />
@@ -39,7 +86,9 @@
     <option name="width" value="1400" />
     <option name="height" value="1000" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -60,7 +109,38 @@
             <path>
               <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
               <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
-              <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day4" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day5" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day6" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day7" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day8" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="advent-of-code-2018" type="b2602c69:ProjectViewProjectNode" />
+              <item name="advent-of-code-2018" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+              <item name="day9" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -72,6 +152,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/bin/day11" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
   </component>
@@ -87,12 +168,75 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
-    <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-      <option name="filePath" value="$PROJECT_DIR$/bin/main.dart" />
-      <option name="workingDirectory" value="$PROJECT_DIR$" />
+  <component name="RunManager" selected="Dart Command Line App.Day 11">
+    <configuration name="Day 1" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day1/day1.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day1" />
       <method v="2" />
     </configuration>
+    <configuration name="Day 10" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day10/day10.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day10" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 11" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day11/day11.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day11" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 2" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day2/day2.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day2" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 3" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day3/day3.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day3" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 4" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day4/day4.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day4" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 5" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day5/day5.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day5" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 6" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day6/day6.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day6" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 7" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day7/day7.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day7" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 8" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day8/day8.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day8" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Day 9" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+      <option name="filePath" value="$PROJECT_DIR$/bin/day9/day9.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/bin/day9" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Dart Command Line App.Day 1" />
+      <item itemvalue="Dart Command Line App.Day 2" />
+      <item itemvalue="Dart Command Line App.Day 3" />
+      <item itemvalue="Dart Command Line App.Day 4" />
+      <item itemvalue="Dart Command Line App.Day 5" />
+      <item itemvalue="Dart Command Line App.Day 6" />
+      <item itemvalue="Dart Command Line App.Day 7" />
+      <item itemvalue="Dart Command Line App.Day 8" />
+      <item itemvalue="Dart Command Line App.Day 9" />
+      <item itemvalue="Dart Command Line App.Day 10" />
+      <item itemvalue="Dart Command Line App.Day 11" />
+    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -104,30 +248,29 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1544563177349</updated>
-      <workItem from="1544563179693" duration="513000" />
+      <workItem from="1544563179693" duration="9332000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="513000" />
+    <option name="totallyTimeSpent" value="9332000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24980299" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13041764" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Dart Analysis" weight="0.32969603" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Terminal" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" visible="true" weight="0.32969603" />
+      <window_info anchor="bottom" id="Messages" weight="0.32969603" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32969603" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32969603" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3998441" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -140,14 +283,239 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
+    <entry file="file://$PROJECT_DIR$/lib/advent_of_code_2018.dart">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/main.dart">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/test/advent_of_code_2018_test.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#62#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day1/day_1_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="1000" selection-start-line="1000" selection-end-line="1000" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day1/day1.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="6" column="51" selection-start-line="6" selection-start-column="51" selection-end-line="6" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day2/day_2_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="250" selection-start-line="250" selection-end-line="250" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day2/day2.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="5" column="35" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day3/day_3_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="1293" selection-start-line="1293" selection-end-line="1293" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day3/day3.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day4/day_4_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="1110" lean-forward="true" selection-start-line="1110" selection-end-line="1110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day5/day_5_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day6/day_6_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="50" lean-forward="true" selection-start-line="50" selection-end-line="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day6/day_6_sample_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day7/day_7_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="772">
+          <caret line="101" selection-start-line="101" selection-end-line="101" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day7/day_7_sample_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day8/day_8_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day10/day10.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day10/day_10_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1075">
+          <caret line="342" lean-forward="true" selection-start-line="342" selection-end-line="342" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day10/day_10_sample_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="930">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis_options.yaml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CHANGELOG.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor />
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pubspec.lock">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="4" column="61" selection-start-line="4" selection-start-column="61" selection-end-line="4" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor />
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day8/day8.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2880">
+          <caret line="96" lean-forward="true" selection-start-line="96" selection-end-line="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day9/day9.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="10" selection-start-line="10" selection-end-line="11" selection-end-column="34" />
+          <folding>
+            <element signature="e#40#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day7/day7.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="7" column="33" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#5711#0" expanded="true" />
+            <element signature="e#108#125#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day5/day5.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3870">
+          <caret line="129" selection-start-line="129" selection-end-line="129" />
+          <folding>
+            <element signature="e#40#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day4/day4.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3090">
+          <caret line="103" selection-start-line="103" selection-end-line="103" />
+          <folding>
+            <element signature="e#39#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day6/day6.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="58" selection-start-line="58" selection-end-line="76" selection-end-column="3" />
+          <folding>
+            <element signature="e#0#5243#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day11/day11.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="990">
+          <caret line="73" column="17" selection-start-line="73" selection-start-column="17" selection-end-line="73" selection-end-column="17" />
+          <folding>
+            <element signature="n#!!block;n#Coordinate#0" />
+            <element signature="e#1818#2061#0" />
+            <element signature="e#4011#4296#0" />
+            <element signature="e#4315#4805#0" />
+            <element signature="e#4824#5314#0" />
+            <element signature="e#4933#5100#0" />
+            <element signature="e#5145#5312#0" />
+            <element signature="e#5042#5312#0" />
+          </folding>
+        </state>
+      </provider>
     </entry>
   </component>
 </project>

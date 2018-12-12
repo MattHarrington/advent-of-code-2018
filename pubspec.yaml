@@ -2,7 +2,7 @@ name: advent_of_code_2018
 description: A sample command-line application.
 # version: 1.0.0
 # homepage: https://www.example.com
-# author: mharrington <email@example.com>
+# author: MattHarrington <mattharrington@users.noreply.github.com>
 
 environment:
   sdk: '>=2.1.0 <3.0.0'
