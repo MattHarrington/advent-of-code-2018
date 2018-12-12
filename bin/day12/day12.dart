@@ -4,6 +4,9 @@ import 'package:trie/trie.dart';
 import 'dart:io';
 import 'dart:collection';
 
+const DEBUG = false;
+const numberOfGenerations = 20;
+
 class Pot<T> extends LinkedListEntry<Pot> {
   int number;
   T state;
@@ -35,20 +38,33 @@ main() {
   print("All yesRules are: " + yesTrie.getAllWords().toString());
   print("All noRules are: " + noTrie.getAllWords().toString());
 
+  // Pad the initial state with 4 empty pots to the left and 4 to the right
   var initialPotState = LinkedList<Pot>();
+  initialPotState.add(Pot(-4, "."));
+  initialPotState.add(Pot(-3, "."));
+  initialPotState.add(Pot(-2, "."));
+  initialPotState.add(Pot(-1, "."));
   for (var i = 0; i < initialState.length; ++i) {
     initialPotState.add(Pot(i, initialState[i]));
   }
-  assert(initialPotState.length == initialState.length);
+  initialPotState.add(Pot(initialState.length, "."));
+  initialPotState.add(Pot(initialState.length + 1, "."));
+  initialPotState.add(Pot(initialState.length + 2, "."));
+  initialPotState.add(Pot(initialState.length + 3, "."));
+  assert(initialPotState.length == initialState.length + 8);
 
   var generations = List<LinkedList<Pot>>();
   generations.add(initialPotState);
 
-  for (var i = 0; i < 20; ++i) {
+  for (var i = 0; i < numberOfGenerations; ++i) {
+//    if (i % 1000000000 == 0) stdout.write("${i} ..");
     var nextGeneration = LinkedList<Pot>();
     var iteration = 0;
     for (var currentPot in generations[i]) {
+      int currentPotNumber = currentPot.number;
       if (currentPot.previous == null) {
+        nextGeneration.add(Pot(currentPot.number - 4, "."));
+        nextGeneration.add(Pot(currentPot.number - 3, "."));
         nextGeneration.add(Pot(currentPot.number - 2, "."));
         nextGeneration.add(Pot(currentPot.number - 1, "."));
       }
@@ -75,6 +91,8 @@ main() {
       if (currentPot.next == null) {
         nextGeneration.add(Pot(currentPot.number + 1, "."));
         nextGeneration.add(Pot(currentPot.number + 2, "."));
+        nextGeneration.add(Pot(currentPot.number + 3, "."));
+        nextGeneration.add(Pot(currentPot.number + 4, "."));
       }
 
       ++iteration;
@@ -82,27 +100,44 @@ main() {
 
     generations.add(nextGeneration);
 
-    print("Added pots: ${nextGeneration.first.number} "
-        "${nextGeneration.first.next.number} ... "
-        "${nextGeneration.last.previous.number} "
-        "${nextGeneration.last.number}");
+    if (DEBUG) {
+      print("Added pots: ${nextGeneration.first.number} "
+          "${nextGeneration.first.next.number} ... "
+          "${nextGeneration.last.previous.number} "
+          "${nextGeneration.last.number}");
+    }
   }
 
-  for (var generation in generations) {
-    print(generation);
+  if (DEBUG) {
+    int generationCounter = 0;
+    for (var pots in generations) {
+      print("${generationCounter}: ${potsToString(pots)}");
+      ++generationCounter;
+    }
   }
 
   int sum = 0;
   var sb = StringBuffer();
-  for (var pot in generations[20]) {
+  for (var pot in generations[numberOfGenerations]) {
     if (pot.state == "#") {
       sum += pot.number;
-      sb.write("${pot.number} ");
+      if (DEBUG) sb.write("${pot.number} ");
     }
   }
-  print(sb.toString());
+  if (DEBUG) print("Pots with plants: ${sb.toString()}");
 
-  print("Sum of generation 20: ${sum}");
+  print("Sum of generation ${numberOfGenerations}: ${sum}");
 }
 
+String potsToString(LinkedList<Pot> pots,
+    {int beginning = -100, int end = 300}) {
+  var sb = StringBuffer();
+  for (var pot in pots) {
+    if (pot.number >= beginning && pot.number <= end) {
+      sb.write("${pot.number},");
+    }
+  }
+  return sb.toString();
+}
 // Guessed 3029 -> too high
+// Guessed 2015
