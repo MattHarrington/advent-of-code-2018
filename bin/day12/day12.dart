@@ -77,7 +77,7 @@ main() {
     }
     for (var i = 0; i < potsToAddAtBeginning; ++i) {
       var firstPotNumber = currentGeneration.first.number;
-      currentGeneration.addFirst(Pot(firstPotNumber - 1 - i, "."));
+      currentGeneration.addFirst(Pot(firstPotNumber - 1, "."));
     }
 
     var iteration = 0;

@@ -261,11 +261,12 @@
       <workItem from="1544642606238" duration="17411000" />
       <workItem from="1544664829546" duration="5771000" />
       <workItem from="1544670722590" duration="5215000" />
+      <workItem from="1544676585913" duration="282000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="60193000" />
+    <option name="totallyTimeSpent" value="60475000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1987" y="25" width="1853" height="1175" extended-state="6" />
@@ -302,6 +303,11 @@
           <url>file://$PROJECT_DIR$/bin/day12/day12.dart</url>
           <line>104</line>
           <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/bin/day12/day12.dart</url>
+          <line>68</line>
+          <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -529,16 +535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_sample_input.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_input.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bin/day12/day12.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="110">
@@ -548,6 +544,16 @@
             <element signature="n#!!block;n#Pot#0" />
             <element signature="n#!!block;n#Garden#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_sample_input.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_input.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="748">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
         </state>
       </provider>
     </entry>
