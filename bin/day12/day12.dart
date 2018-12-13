@@ -6,8 +6,8 @@ import 'dart:collection';
 const DEBUG = false;
 const USE_SAMPLE_DATA = false;
 //const numberOfGenerations = 50000000000;
-const numberOfGenerations = 20;
 //const numberOfGenerations = 1000;
+const numberOfGenerations = 20;
 
 class Pot<T> extends LinkedListEntry<Pot> {
   int number;
@@ -40,17 +40,11 @@ main() {
   }
 
   var initialState = puzzleInput[0].split(" ")[2];
-  print("initialState.length: ${initialState.length}");
 
   for (var i = 2; i < puzzleInput.length; ++i) {
     var splitRecord = puzzleInput[i].split(" ");
     if (splitRecord[2] == ".") noRules.add(splitRecord[0]);
     if (splitRecord[2] == "#") yesRules.add(splitRecord[0]);
-  }
-
-  if (!USE_SAMPLE_DATA) {
-    assert(yesRules.length == 16);
-    assert(noRules.length == 16);
   }
 
   var currentGeneration = Garden<Pot>();
@@ -59,11 +53,9 @@ main() {
     currentGeneration.add(Pot(i, initialState[i]));
   }
 
-  for (var g = 0; g < numberOfGenerations; ++g) {
+  for (var gen = 0; gen < numberOfGenerations; ++gen) {
     var nextGeneration = Garden<Pot>();
-//    if (DEBUG) print("${g}: ${currentGeneration.toString()}");
-    if (DEBUG) print("${g}: ${potsToString(currentGeneration)}");
-//    if (g % 100 == 0) stdout.write("${(g / 100).truncate()}C ..");
+    if (DEBUG) print("${gen}: ${gardenToString(currentGeneration)}");
 
     // Ensure 5 empty pots at beginning
     int potsToAddAtBeginning = 0;
@@ -80,7 +72,6 @@ main() {
       currentGeneration.addFirst(Pot(firstPotNumber - 1, "."));
     }
 
-    var iteration = 0;
     for (var currentPot in currentGeneration) {
       var sb = StringBuffer();
       sb.write(currentPot.previous?.previous?.state ?? ".");
@@ -90,15 +81,13 @@ main() {
       sb.write(currentPot.next?.next?.state ?? ".");
       var pattern = sb.toString();
       Pot newPot;
-      if (USE_SAMPLE_DATA) newPot = Pot(currentPot.number, '.');
-      if (!USE_SAMPLE_DATA) newPot = Pot(currentPot.number, currentPot.state);
+      newPot = Pot(currentPot.number, '.');
       if (yesRules.contains(pattern)) {
         newPot.state = "#";
       } else if (noRules.contains(pattern)) {
         newPot.state = ".";
       }
       nextGeneration.add(newPot);
-      ++iteration;
     }
 
     // Ensure 5 empty pots at end
@@ -115,9 +104,31 @@ main() {
       var lastPotNumber = currentGeneration.last.number;
       nextGeneration.add(Pot(lastPotNumber + 1 + i, "."));
     }
-    var lastPotCurrentGeneration = currentGeneration.last;
-    var lastPotNextGeneration = nextGeneration.last;
-    var currentGenerationSum = sumOfGarden(currentGeneration);
+
+    // TODO unlink extra nodes.  Keeps list shorter.
+
+    bool beginningHasSixEmptyPots(Garden garden) {
+      if (garden.first.state == '.' &&
+          garden.first.next.state == '.' &&
+          garden.first.next.next.state == '.' &&
+          garden.first.next.next.next.state == '.' &&
+          garden.first.next.next.next.next.state == '.' &&
+          garden.first.next.next.next.next.next.state == '.') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    while (beginningHasSixEmptyPots(nextGeneration)) {
+      nextGeneration.first.unlink();
+    }
+
+    if (DEBUG && gen % 1000 == 0) {
+      print("Generation ${(gen / 1000).truncate()}M .. "
+          "currentGeneration.length: ${currentGeneration.length} "
+          "sum: ${sumOfGarden(currentGeneration)}");
+    }
 
     currentGeneration = nextGeneration;
   }
@@ -126,13 +137,11 @@ main() {
 
   print("Sum of generation ${numberOfGenerations}: ${sum}");
 
-  print("Number of last pot: ${currentGeneration.last.number}");
-  print("Current generation: ${potsToString(currentGeneration)}");
   if (!USE_SAMPLE_DATA && numberOfGenerations == 20) assert(sum == 2995);
   if (USE_SAMPLE_DATA && numberOfGenerations == 20) assert(sum == 325);
 }
 
-String potsToString(Garden<Pot> pots, {int beginning = -200, int end = 200}) {
+String gardenToString(Garden<Pot> pots, {int beginning = -2, int end = 35}) {
   var sb = StringBuffer();
   for (var pot in pots) {
     if (pot.number >= beginning && pot.number <= end) {
