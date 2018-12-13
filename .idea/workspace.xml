@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="270c07ab-7541-44a9-943b-b8cfb6769ec6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bin/day12/day12.dart" beforeDir="false" afterPath="$PROJECT_DIR$/bin/day12/day12.dart" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -18,20 +19,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/bin/day12/day12.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="60" column="18" lean-forward="true" selection-start-line="60" selection-start-column="18" selection-end-line="60" selection-end-column="18" />
+            <state relative-caret-position="3182">
+              <caret line="153" column="13" selection-start-line="153" selection-start-column="13" selection-end-line="153" selection-end-column="13" />
               <folding>
                 <element signature="e#41#73#0" expanded="true" />
+                <element signature="n#!!block;n#Pot#0" />
+                <element signature="n#!!block;n#Garden#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/bin/day12/day_12_input.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-450" />
-          </provider>
+        <entry file="file://$PROJECT_DIR$/bin/day12/day_12_sample_input.txt">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -45,6 +46,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
+      <find>Link</find>
+      <find>element</find>
       <find>print</find>
     </findStrings>
   </component>
@@ -246,17 +249,19 @@
       <workItem from="1544594365184" duration="14573000" />
       <workItem from="1544608971417" duration="28000" />
       <workItem from="1544636571751" duration="4898000" />
+      <workItem from="1544642437917" duration="40000" />
+      <workItem from="1544642606238" duration="17411000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31756000" />
+    <option name="totallyTimeSpent" value="49207000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13475177" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13435777" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -279,6 +284,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/bin/day12/day12.dart</url>
+          <line>111</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/lib/advent_of_code_2018.dart" />
@@ -494,18 +510,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_sample_input.txt" />
     <entry file="file://$PROJECT_DIR$/bin/day12/day_12_input.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-450" />
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bin/day12/day_12_sample_input.txt">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/day12/day12.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="60" column="18" lean-forward="true" selection-start-line="60" selection-start-column="18" selection-end-line="60" selection-end-column="18" />
+        <state relative-caret-position="3182">
+          <caret line="153" column="13" selection-start-line="153" selection-start-column="13" selection-end-line="153" selection-end-column="13" />
           <folding>
             <element signature="e#41#73#0" expanded="true" />
+            <element signature="n#!!block;n#Pot#0" />
+            <element signature="n#!!block;n#Garden#0" />
           </folding>
         </state>
       </provider>
