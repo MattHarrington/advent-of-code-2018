@@ -1,11 +1,10 @@
 // https://adventofcode.com/2018/day/12
 
-import 'package:trie/trie.dart';
 import 'dart:io';
 import 'dart:collection';
 
-const DEBUG = true;
-const USE_SAMPLE_DATA = true;
+const DEBUG = false;
+const USE_SAMPLE_DATA = false;
 //const numberOfGenerations = 50000000000;
 const numberOfGenerations = 20;
 //const numberOfGenerations = 1000;
@@ -49,8 +48,10 @@ main() {
     if (splitRecord[2] == "#") yesRules.add(splitRecord[0]);
   }
 
-  var yesTrie = Trie.list(yesRules);
-  var noTrie = Trie.list(noRules);
+  if (!USE_SAMPLE_DATA) {
+    assert(yesRules.length == 16);
+    assert(noRules.length == 16);
+  }
 
   var currentGeneration = Garden<Pot>();
 
@@ -74,10 +75,9 @@ main() {
       } else if (tempBeginningPot.state == ".") {}
       tempBeginningPot = tempBeginningPot.next;
     }
-    potsToAddAtBeginning = 5;
     for (var i = 0; i < potsToAddAtBeginning; ++i) {
       var firstPotNumber = currentGeneration.first.number;
-      nextGeneration.addFirst(Pot(firstPotNumber - 1 - i, "."));
+      currentGeneration.addFirst(Pot(firstPotNumber - 1 - i, "."));
     }
 
     var iteration = 0;
@@ -92,9 +92,9 @@ main() {
       Pot newPot;
       if (USE_SAMPLE_DATA) newPot = Pot(currentPot.number, '.');
       if (!USE_SAMPLE_DATA) newPot = Pot(currentPot.number, currentPot.state);
-      if (yesTrie.getAllWords().contains(pattern)) {
+      if (yesRules.contains(pattern)) {
         newPot.state = "#";
-      } else if (noTrie.getAllWords().contains(pattern)) {
+      } else if (noRules.contains(pattern)) {
         newPot.state = ".";
       }
       nextGeneration.add(newPot);
@@ -103,21 +103,22 @@ main() {
 
     // Ensure 5 empty pots at end
     int potsToAddAtEnd = 0;
-    var tempEndPot = currentGeneration.last;
+    var tempEndPot = nextGeneration.last;
     for (var i = 0; i < 5; ++i) {
       if (tempEndPot.state == "#") {
         potsToAddAtEnd = 5 - i;
         break;
-      } else if (tempEndPot.state == ".") {}
+      }
       tempEndPot = tempEndPot.previous;
     }
-    potsToAddAtEnd = 5;
     for (var i = 0; i < potsToAddAtEnd; ++i) {
       var lastPotNumber = currentGeneration.last.number;
       nextGeneration.add(Pot(lastPotNumber + 1 + i, "."));
     }
     var lastPotCurrentGeneration = currentGeneration.last;
     var lastPotNextGeneration = nextGeneration.last;
+    var currentGenerationSum = sumOfGarden(currentGeneration);
+
     currentGeneration = nextGeneration;
   }
 
