@@ -68,7 +68,7 @@ main() {
       if (tempBeginningPot.state == "#") {
         potsToAddAtBeginning = 5 - i;
         break;
-      } else if (tempBeginningPot.state == ".") {}
+      }
       tempBeginningPot = tempBeginningPot.next;
     }
     for (var i = 0; i < potsToAddAtBeginning; ++i) {
@@ -76,9 +76,11 @@ main() {
       currentGeneration.addFirst(Pot(firstPotNumber - 1, "."));
     }
 
-    // Process pots in currentGeneration.  Create nextGeneration with
+    // Process pots in currentGeneration.  Populate nextGeneration with
     // results from currentGeneration.
     for (var currentPot in currentGeneration) {
+      // Empty pots extend to positive and negative infinity. Need to consider
+      // 2 pots before first element and 2 pots after last element.
       var sb = StringBuffer();
       sb.write(currentPot.previous?.previous?.state ?? ".");
       sb.write(currentPot.previous?.state ?? ".");
@@ -86,8 +88,7 @@ main() {
       sb.write(currentPot.next?.state ?? ".");
       sb.write(currentPot.next?.next?.state ?? ".");
       var pattern = sb.toString();
-      Pot newPot;
-      newPot = Pot(currentPot.number, '.');
+      var newPot = Pot(currentPot.number, '.');
       if (yesRules.contains(pattern)) {
         newPot.state = "#";
       } else if (noRules.contains(pattern)) {
