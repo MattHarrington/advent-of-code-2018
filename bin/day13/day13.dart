@@ -4,31 +4,31 @@ import 'dart:io';
 import 'package:uuid/uuid.dart';
 
 const DEBUG = false;
-const USE_SAMPLE_DATA = true;
+const USE_SAMPLE_DATA = false;
 
-enum NextDirection { left, straight, right }
+enum Direction { left, straight, right }
 
-enum State { up, down, left, right }
+enum Heading { up, down, left, right }
 
 class Cart extends Comparable<Cart> {
   int x, y;
-  State state;
-  NextDirection nextDirection;
+  Heading heading;
+  Direction directionAtNextIntersection;
   final String id;
 
   void atIntersection() {
-    if (nextDirection != NextDirection.straight) _setNewState();
+    if (directionAtNextIntersection != Direction.straight) _setNewState();
 
-    int newIndex = (nextDirection.index + 1) % 3;
+    int newIndex = (directionAtNextIntersection.index + 1) % 3;
     switch (newIndex) {
       case 0:
-        nextDirection = NextDirection.left;
+        directionAtNextIntersection = Direction.left;
         break;
       case 1:
-        nextDirection = NextDirection.straight;
+        directionAtNextIntersection = Direction.straight;
         break;
       case 2:
-        nextDirection = NextDirection.right;
+        directionAtNextIntersection = Direction.right;
         break;
       default:
         throw Exception("Should never be here");
@@ -36,27 +36,35 @@ class Cart extends Comparable<Cart> {
   }
 
   void _setNewState() {
-    if (state == State.down && nextDirection == NextDirection.right) {
-      state = State.left;
-    } else if (state == State.down && nextDirection == NextDirection.left) {
-      state = State.right;
-    } else if (state == State.up && nextDirection == NextDirection.left) {
-      state = State.left;
-    } else if (state == State.up && nextDirection == NextDirection.right) {
-      state = State.right;
-    } else if (state == State.left && nextDirection == NextDirection.left) {
-      state = State.down;
-    } else if (state == State.left && nextDirection == NextDirection.right) {
-      state = State.up;
-    } else if (state == State.right && nextDirection == NextDirection.left) {
-      state = State.up;
-    } else if (state == State.right && nextDirection == NextDirection.right) {
-      state = State.down;
+    if (heading == Heading.down &&
+        directionAtNextIntersection == Direction.right) {
+      heading = Heading.left;
+    } else if (heading == Heading.down &&
+        directionAtNextIntersection == Direction.left) {
+      heading = Heading.right;
+    } else if (heading == Heading.up &&
+        directionAtNextIntersection == Direction.left) {
+      heading = Heading.left;
+    } else if (heading == Heading.up &&
+        directionAtNextIntersection == Direction.right) {
+      heading = Heading.right;
+    } else if (heading == Heading.left &&
+        directionAtNextIntersection == Direction.left) {
+      heading = Heading.down;
+    } else if (heading == Heading.left &&
+        directionAtNextIntersection == Direction.right) {
+      heading = Heading.up;
+    } else if (heading == Heading.right &&
+        directionAtNextIntersection == Direction.left) {
+      heading = Heading.up;
+    } else if (heading == Heading.right &&
+        directionAtNextIntersection == Direction.right) {
+      heading = Heading.down;
     }
   }
 
-  Cart(this.x, this.y, this.state) : id = Uuid().v4() {
-    nextDirection = NextDirection.left;
+  Cart(this.x, this.y, this.heading) : id = Uuid().v4() {
+    directionAtNextIntersection = Direction.left;
   }
 
   @override
@@ -76,7 +84,7 @@ class Cart extends Comparable<Cart> {
   }
 
   @override
-  String toString() => "$state";
+  String toString() => "($x, $y) $heading";
 }
 
 var carts = List<Cart>();
@@ -95,19 +103,19 @@ main() {
       var point = puzzleInput[y][x];
       switch (point) {
         case '^':
-          carts.add(Cart(x, y, State.up));
+          carts.add(Cart(x, y, Heading.up));
           grid[y][x] = "|";
           break;
         case 'v':
-          carts.add(Cart(x, y, State.down));
+          carts.add(Cart(x, y, Heading.down));
           grid[y][x] = "|";
           break;
         case '<':
-          carts.add(Cart(x, y, State.left));
+          carts.add(Cart(x, y, Heading.left));
           grid[y][x] = "-";
           break;
         case '>':
-          carts.add(Cart(x, y, State.right));
+          carts.add(Cart(x, y, Heading.right));
           grid[y][x] = "-";
           break;
         default:
@@ -125,17 +133,21 @@ main() {
     // Sort carts
     carts.sort();
     // Move carts
-    for (var cart in carts) {
+    for (var cart in carts.toList()) {
       moveCart(cart, grid);
       // Check for collision
-      if (collisionHappened(cart, grid)) {
-        if (USE_SAMPLE_DATA) {assert(cart.x == 7 && cart.y == 3);}
-        else {assert(cart.x == 139 && cart.y == 65);}
-
-        print("Collision at: (${cart.x}, ${cart.y})");
-        loop = false;
-        break;
+      if (collisionCheck(cart, grid, removeCollidedCarts: true)) {
+//        if (USE_SAMPLE_DATA) {
+//          assert(cart.x == 7 && cart.y == 3);
+//        } else {
+//          assert(cart.x == 139 && cart.y == 65);
+//        }
+        print("Collision at: (${cart.x}, ${cart.y}) at tick: $tick");
       }
+    }
+    if (carts.length == 1) {
+      loop = false;
+      print("Last cart position: ${carts.first.x}, ${carts.first.y}");
     }
 
     ++tick;
@@ -143,7 +155,7 @@ main() {
 }
 
 void moveCart(Cart cart, List<List<String>> grid) {
-  if (cart.state == State.up) {
+  if (cart.heading == Heading.up) {
     switch (grid[cart.y - 1][cart.x]) {
       case '-':
         throw Exception("Should never be here");
@@ -152,11 +164,11 @@ void moveCart(Cart cart, List<List<String>> grid) {
         break;
       case r'\':
         --cart.y;
-        cart.state = State.left;
+        cart.heading = Heading.left;
         break;
       case '/':
         --cart.y;
-        cart.state = State.right;
+        cart.heading = Heading.right;
         break;
       case '+':
         --cart.y;
@@ -166,7 +178,7 @@ void moveCart(Cart cart, List<List<String>> grid) {
         throw Exception("Should never be here");
         break;
     }
-  } else if (cart.state == State.down) {
+  } else if (cart.heading == Heading.down) {
     switch (grid[cart.y + 1][cart.x]) {
       case '-':
         throw Exception("Should never be here");
@@ -175,11 +187,11 @@ void moveCart(Cart cart, List<List<String>> grid) {
         break;
       case r'\':
         ++cart.y;
-        cart.state = State.right;
+        cart.heading = Heading.right;
         break;
       case '/':
         ++cart.y;
-        cart.state = State.left;
+        cart.heading = Heading.left;
         break;
       case '+':
         ++cart.y;
@@ -189,7 +201,7 @@ void moveCart(Cart cart, List<List<String>> grid) {
         throw Exception("Should never be here");
         break;
     }
-  } else if (cart.state == State.left) {
+  } else if (cart.heading == Heading.left) {
     switch (grid[cart.y][cart.x - 1]) {
       case '|':
         throw Exception("Should never be here");
@@ -199,11 +211,11 @@ void moveCart(Cart cart, List<List<String>> grid) {
         break;
       case r'\':
         --cart.x;
-        cart.state = State.up;
+        cart.heading = Heading.up;
         break;
       case '/':
         --cart.x;
-        cart.state = State.down;
+        cart.heading = Heading.down;
         break;
       case '+':
         --cart.x;
@@ -213,7 +225,7 @@ void moveCart(Cart cart, List<List<String>> grid) {
         throw Exception("Should never be here");
         break;
     }
-  } else if (cart.state == State.right) {
+  } else if (cart.heading == Heading.right) {
     switch (grid[cart.y][cart.x + 1]) {
       case '|':
         throw Exception("Should never be here");
@@ -223,11 +235,11 @@ void moveCart(Cart cart, List<List<String>> grid) {
         break;
       case r'\':
         ++cart.x;
-        cart.state = State.down;
+        cart.heading = Heading.down;
         break;
       case '/':
         ++cart.x;
-        cart.state = State.up;
+        cart.heading = Heading.up;
         break;
       case '+':
         ++cart.x;
@@ -240,11 +252,21 @@ void moveCart(Cart cart, List<List<String>> grid) {
   }
 }
 
-bool collisionHappened(Cart justMovedCart, List<List<String>> grid) {
-  return carts.any((cart) =>
-      cart.id != justMovedCart.id &&
-      cart.x == justMovedCart.x &&
-      cart.y == justMovedCart.y);
+bool collisionCheck(Cart justMovedCart, List<List<String>> grid,
+    {bool removeCollidedCarts = false}) {
+  var collidedCart = carts.firstWhere(
+      (cart) =>
+          cart.id != justMovedCart.id &&
+          cart.x == justMovedCart.x &&
+          cart.y == justMovedCart.y,
+      orElse: () => null);
+  if (collidedCart == null) {
+    return false;
+  } else if (collidedCart != null && removeCollidedCarts == true) {
+    carts.remove(collidedCart);
+    carts.remove(justMovedCart);
+  }
+  return true;
 }
 
 void printGrid(List<List<String>> grid) {
@@ -252,3 +274,7 @@ void printGrid(List<List<String>> grid) {
     print(row);
   }
 }
+
+// Not correct part 2: 118,48 or 117,48
+
+// Correct: (40,77)
