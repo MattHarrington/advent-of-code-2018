@@ -3,7 +3,7 @@
 import 'dart:io';
 
 const DEBUG = false;
-const USE_SAMPLE_DATA = true;
+const USE_SAMPLE_DATA = false;
 
 main() {
   var puzzleInput = (USE_SAMPLE_DATA
@@ -11,8 +11,11 @@ main() {
       : File("day_17_input.txt").readAsLinesSync());
   // Sample: x=495, y=2..7
   // Sample: y=7, x=495..501
-  final rows = 14;
-  final columns = 508;
+
+  int maxY = (USE_SAMPLE_DATA ? 13 : 1841);
+
+  final rows = maxY + 1;
+  final columns = 700;
   var grid = List.generate(rows, (_) => List<String>.filled(columns, '.'));
 
   for (var record in puzzleInput) {
@@ -58,61 +61,54 @@ main() {
 
   grid[0][500] = '+';
 
-  print('goDown: ${goDown(500, 0, grid)}');
+  print('Answer: ${goDown(500, 0, grid, maxY)}');
+  printGrid(grid, begin: 200, end: 700);
 }
 
-int goDown(int x, int y, List<List<String>> grid) {
-  if (y > 13 || grid[y][x] == '#') {
+int goDown(int x, int y, List<List<String>> grid, int maxY) {
+  if (y > maxY || grid[y][x] == '#') {
     // base case
     return 0;
   } else {
     grid[y][x] = '|';
-    printGrid(grid);
+    if (DEBUG) printGrid(grid);
     return 1 +
-        goDown(x, y + 1, grid) +
-        goLeft(x, y, grid) +
-        goRight(x, y, grid);
+        goDown(x, y + 1, grid, maxY) +
+        goLeft(x, y, grid, maxY) +
+        goRight(x, y, grid, maxY);
   }
 }
 
-int goLeft(int x, int y, List<List<String>> grid) {
-  if (y > 12 ||
+int goLeft(int x, int y, List<List<String>> grid, maxY) {
+  if (y > maxY - 1 ||
       grid[y][x] == '#' ||
       (grid[y + 1][x + 1] != '#' && grid[y + 1][x] == '.') ||
       grid[y + 1][x] == '|') {
     // base case
     return -1;
   } else if (grid[y + 1][x + 1] == '#' && grid[y + 1][x] == '.') {
-    return goDown(x, y, grid);
+    return goDown(x, y, grid, maxY);
   } else {
     grid[y][x] = '|';
-    printGrid(grid);
-    return 1 + goLeft(x - 1, y, grid);
+    if (DEBUG) printGrid(grid);
+    return 1 + goLeft(x - 1, y, grid, maxY);
   }
 }
 
-int goRight(int x, int y, List<List<String>> grid) {
-  if (y == 13) {
-    // For debugging.  Set breakpoint below.
-    print('y == 13');
-  }
-  if (y > 12 ||
-      grid[y][x] == '#'
-      ) {
+int goRight(int x, int y, List<List<String>> grid, int maxY) {
+  if (y > maxY - 1 || grid[y][x] == '#') {
     // base case
     checkIfSettled(x - 1, y, grid);
     return -1;
-  }
-
-  else if ((grid[y + 1][x - 1] != '#' && grid[y + 1][x] == '.') ||
-      grid[y + 1][x] == '|') {return 1;}
-
-  else if (grid[y + 1][x - 1] == '#' && grid[y + 1][x] == '.') {
-    return goDown(x, y, grid);
+  } else if ((grid[y + 1][x - 1] != '#' && grid[y + 1][x] == '.') ||
+      grid[y + 1][x] == '|') {
+    return 1;
+  } else if (grid[y + 1][x - 1] == '#' && grid[y + 1][x] == '.') {
+    return goDown(x, y, grid, maxY);
   } else {
     grid[y][x] = '|';
-    printGrid(grid);
-    return 1 + goRight(x + 1, y, grid);
+    if (DEBUG) printGrid(grid);
+    return 1 + goRight(x + 1, y, grid, maxY);
   }
 }
 
@@ -145,3 +141,5 @@ void printGrid(List<List<String>> grid, {int begin = 494, int end = 508}) {
   }
   print("\n");
 }
+
+// 69317 too large
