@@ -56,20 +56,21 @@ main() {
       }
     }
   }
+
   grid[0][500] = '+';
 
-  print('goDown: ${goDown(500, 0, grid)}');
+//  print('goDown: ${goDown(500, 0, grid)}');
   printGrid(grid);
 
-//  print('goAcross: ${goAcross(500, 6, grid)}');
 }
 
 int goDown(int x, int y, List<List<String>> grid) {
-  if (grid[y][x] == '#') {
+  if (y > 14 || grid[y][x] == '#') {
     // base case
     return 0;
   } else {
     grid[y][x] = '~';
+    printGrid(grid);
     return 1 +
         goLeft(x, y, grid) +
         goRight(x, y, grid) +
@@ -78,31 +79,34 @@ int goDown(int x, int y, List<List<String>> grid) {
 }
 
 int goLeft(int x, int y, List<List<String>> grid) {
-  if (x < 400 || grid[y][x] == '#') {
+  if (grid[y][x] == '#') {
     // base case
     return -1;
+  } else if (grid[y+1][x+1] == '#' && grid[y + 1][x] == '.') {
+    goDown(x, y, grid);
   } else {
     grid[y][x] = '~';
+    printGrid(grid);
     return 1 + goLeft(x - 1, y, grid);
   }
 }
 
 int goRight(int x, int y, List<List<String>> grid) {
-  if (grid[y+1][x] == '.') {
-    // overflow
-    goDown(x,y,grid);
-  }
-  if (x > 507 || grid[y][x] == '#') {
+  if (grid[y][x] == '#') {
     // base case
     return -1;
+  } else if (grid[y+1][x-1] == '#' && grid[y + 1][x] == '.') {
+    // go goDown
+    goDown(x, y, grid);
   } else {
     grid[y][x] = '~';
+    printGrid(grid);
     return 1 + goRight(x + 1, y, grid);
   }
 }
 
-void printGrid(List<List<String>> grid) {
+void printGrid(List<List<String>> grid, {int begin = 494, int end = 508}) {
   for (var row in grid) {
-    print(row);
+    print(row.sublist(begin,end));
   }
 }
