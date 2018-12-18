@@ -59,31 +59,33 @@ main() {
 
   grid[0][500] = '+';
 
-//  print('goDown: ${goDown(500, 0, grid)}');
+  print('goDown: ${goDown(500, 0, grid)}');
   printGrid(grid);
-
 }
 
 int goDown(int x, int y, List<List<String>> grid) {
-  if (y > 14 || grid[y][x] == '#') {
+  if (y > 13 || grid[y][x] == '#') {
     // base case
     return 0;
   } else {
-    grid[y][x] = '~';
+    grid[y][x] = '|';
     printGrid(grid);
     return 1 +
+        goDown(x, y + 1, grid) +
         goLeft(x, y, grid) +
-        goRight(x, y, grid) +
-        goDown(x, y + 1, grid);
+        goRight(x, y, grid);
   }
 }
 
 int goLeft(int x, int y, List<List<String>> grid) {
-  if (grid[y][x] == '#') {
+  if (y > 12 ||
+      grid[y][x] == '#' ||
+      (grid[y + 1][x + 1] != '#' && grid[y + 1][x] == '.')) {
     // base case
-    return -1;
-  } else if (grid[y+1][x+1] == '#' && grid[y + 1][x] == '.') {
-    goDown(x, y, grid);
+    return 0;
+  } else if (grid[y + 1][x + 1] == '#' && grid[y + 1][x] == '.') {
+//    grid[y][x] = '~';
+    return goDown(x, y, grid);
   } else {
     grid[y][x] = '~';
     printGrid(grid);
@@ -92,12 +94,17 @@ int goLeft(int x, int y, List<List<String>> grid) {
 }
 
 int goRight(int x, int y, List<List<String>> grid) {
-  if (grid[y][x] == '#') {
+  if (y == 13) {
+    print('y == 13');
+  }
+  if (y > 12 ||
+      grid[y][x] == '#' ||
+      (grid[y + 1][x - 1] != '#' && grid[y + 1][x] == '.')) {
     // base case
-    return -1;
-  } else if (grid[y+1][x-1] == '#' && grid[y + 1][x] == '.') {
-    // go goDown
-    goDown(x, y, grid);
+    return 0;
+  } else if (grid[y + 1][x - 1] == '#' && grid[y + 1][x] == '.') {
+//    grid[y][x] = '~';
+    return goDown(x, y, grid);
   } else {
     grid[y][x] = '~';
     printGrid(grid);
@@ -106,7 +113,14 @@ int goRight(int x, int y, List<List<String>> grid) {
 }
 
 void printGrid(List<List<String>> grid, {int begin = 494, int end = 508}) {
+  int rowNumber = 0;
   for (var row in grid) {
-    print(row.sublist(begin,end));
+    var sb = StringBuffer();
+    for (var element in row.sublist(begin, end)) {
+      sb.write(element);
+    }
+    print("${rowNumber.toString().padLeft(2)} ${sb.toString()}");
+    ++rowNumber;
   }
+  print("\n");
 }
