@@ -2,8 +2,8 @@
 
 import 'dart:io';
 
-const DEBUG = false;
-const USE_SAMPLE_DATA = false;
+const DEBUG = true;
+const USE_SAMPLE_DATA = true;
 
 main() {
   var puzzleInput = (USE_SAMPLE_DATA
@@ -62,7 +62,7 @@ main() {
   grid[0][500] = '+';
 
   print('Answer: ${goDown(500, 0, grid, maxY)}');
-  printGrid(grid, begin: 200, end: 700);
+//  printGrid(grid, begin: 200, end: 700);
 }
 
 int goDown(int x, int y, List<List<String>> grid, int maxY) {
@@ -96,7 +96,10 @@ int goLeft(int x, int y, List<List<String>> grid, maxY) {
 }
 
 int goRight(int x, int y, List<List<String>> grid, int maxY) {
-  if (y > maxY - 1 || grid[y][x] == '#') {
+  if (y > maxY - 1) {
+    return -1;
+  }
+  if (grid[y][x] == '#') {
     // base case
     checkIfSettled(x - 1, y, grid);
     return -1;
