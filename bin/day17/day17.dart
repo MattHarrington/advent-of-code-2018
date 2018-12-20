@@ -14,6 +14,7 @@ main() {
   // Sample: x=495, y=2..7
   // Sample: y=7, x=495..501
 
+  // TODO extract min/max from the puzzle input rather than manually
   int minY = (USE_SAMPLE_DATA ? 1 : 5);
   int maxY = (USE_SAMPLE_DATA ? 13 : 1841);
 
