@@ -4,7 +4,8 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
-const USE_SAMPLE_DATA = false;
+const DEBUG = false;
+const USE_SAMPLE_DATA = true;
 
 class Node {
   String direction;
@@ -27,7 +28,7 @@ class Node {
     for (var child in node.children) {
       maxDepth = max(maxDepth, depthOfTree(child));
     }
-//    stdout.write(node.direction);
+    stdout.write(node.direction);
     return maxDepth + 1;
   }
 
@@ -52,22 +53,31 @@ main() {
       r'^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$';
 
   var puzzleInput = (USE_SAMPLE_DATA
-      ? sample31
+      ? sample10
       : File('day_20_input.txt').readAsStringSync());
 
-  // Remove "empty options"
+  if (DEBUG) print('Original puzzle input: $puzzleInput');
+
+  // Deal with "empty options"
   var emptyOptionRegex = RegExp(r'\([NEWS|]*\|\)');
-  puzzleInput = puzzleInput.replaceAll(emptyOptionRegex, '');
+//  puzzleInput = puzzleInput.replaceAll(emptyOptionRegex, '');
+
+  puzzleInput = puzzleInput.replaceAllMapped(emptyOptionRegex, (Match m) {
+    int halfway = (m.group(0).length / 2).truncate();
+    return '${m.group(0).substring(0, halfway)})';
+  });
+
+  if (DEBUG) print('New puzzle input: $puzzleInput');
 
   var puzzleStack = Queue<String>();
   for (var i = 1; i < puzzleInput.length; ++i) {
     puzzleStack.add(puzzleInput[i]);
   }
 
-  var tree = Node(puzzleStack.removeFirst());
-  buildTree(tree, puzzleStack);
-  var depth = Node.depthOfTree(tree);
-  print('Depth: $depth');
+  var firstNode = Node(puzzleStack.removeFirst());
+  buildTree(firstNode, puzzleStack);
+  var depth = Node.depthOfTree(firstNode);
+  print('\nDepth: $depth');
 }
 
 void buildTree(Node node, Queue<String> stack) {
@@ -80,10 +90,19 @@ void buildTree(Node node, Queue<String> stack) {
   if (next == '(') {
     // children
     buildTree(node, stack);
-    do {
-      next = stack.removeFirst();
-    } while (next == ')');
-    while (next == '|') next = stack.removeFirst();
+//    if (stack.isEmpty) {
+//      print("empty stack?");
+//      return;
+//    }
+//    do {
+//      next = stack.removeFirst();
+//    } while (next == ')');
+//    while (next == '|') next = stack.removeFirst();
+//  next = stack.removeFirst();
+//  if (next == '|') next = stack.removeFirst();
+//  next = stack.removeFirst();
+    stack.add(next);
+  return;
   }
   var newNode = Node(next);
   node.addChild(newNode);
@@ -91,3 +110,4 @@ void buildTree(Node node, Queue<String> stack) {
 }
 
 // 4724 too low
+// 5019 too high
