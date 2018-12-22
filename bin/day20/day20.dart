@@ -51,7 +51,7 @@ main() {
       r'^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$';
 
   var puzzleInput =
-      (USE_SAMPLE_DATA ? sampleA : File('day_20_input.txt').readAsStringSync());
+      (USE_SAMPLE_DATA ? sample18 : File('day_20_input.txt').readAsStringSync());
 
   if (DEBUG) print('Original puzzle input: $puzzleInput');
 
@@ -87,13 +87,7 @@ Node buildTree(String puzzleInput) {
     }
 
     if (puzzleInput[i] == '|') {
-      if (puzzleInput[i + 1] == ')') {
-        currentNode = stack.removeFirst(); // pop
-        ++i;
-        continue;
-      } else {
-        currentNode = stack.first; // peek
-      }
+      currentNode = stack.first; // peek
     }
 
     if (puzzleInput[i] == ')') {
