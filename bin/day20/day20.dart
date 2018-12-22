@@ -42,7 +42,7 @@ main() {
   ^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$ -> 23
   ^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$ -> 31
    */
-  var sampleA = r'^N(E|W)N$';
+  var sampleA = r'^N(E|W)N$'; // Solution fails with this input
   var sample3 = r'^WNE$';
   var sample10 = r'^ENWWW(NEEE|SSE(EE|N))$';
   var sample18 = r'^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$';
@@ -83,21 +83,21 @@ Node buildTree(String puzzleInput) {
 
   for (var i = 2; i < puzzleInput.length; ++i) {
     if (puzzleInput[i] == '(') {
-      stack.addFirst(currentNode);
+      stack.addFirst(currentNode); // push
     }
 
     if (puzzleInput[i] == '|') {
       if (puzzleInput[i + 1] == ')') {
-        currentNode = stack.removeFirst();
+        currentNode = stack.removeFirst(); // pop
         ++i;
         continue;
       } else {
-        currentNode = stack.first;
+        currentNode = stack.first; // peek
       }
     }
 
     if (puzzleInput[i] == ')') {
-      currentNode = stack.removeFirst();
+      currentNode = stack.removeFirst(); // pop
     }
 
     if ('NEWS'.contains(puzzleInput[i])) {
