@@ -9,27 +9,50 @@ const USE_SAMPLE_DATA = false;
 
 class Node {
   String value;
+  Node parent;
   List<Node> children;
+  bool visited = false;
+  static int length = 0;
 
   Node(this.value) {
     children = List<Node>();
+    ++length;
+  }
+
+  Node.withParent(String value, Node parent) {
+    this.value = value;
+    this.parent = parent;
+    children = List<Node>();
+    ++length;
   }
 
   void addChild(Node child) {
     children.add(child);
   }
 
-  int get depth {
-    if (value == r'$') {
+  int distanceTo(Node ancestor) {
+    if (parent == null) return 1;
+    int distance = 2;
+
+    var currentNode = this;
+    while (currentNode.parent != ancestor) {
+      currentNode = currentNode.parent;
+      ++distance;
+    }
+    return distance;
+  }
+
+  int get height {
+    if (value == '') {
       return -1000; // Can be large negative number since it's passed to max()
     }
-    int maxDepth = 0;
+    int maxHeight = 0;
 
     for (var child in children) {
-      maxDepth = max(maxDepth, child.depth);
+      maxHeight = max(maxHeight, child.height);
     }
     if (DEBUG) stdout.write(value);
-    return maxDepth + 1;
+    return maxHeight + 1;
   }
 }
 
@@ -50,8 +73,9 @@ main() {
   var sample31 =
       r'^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$';
 
-  var puzzleInput =
-      (USE_SAMPLE_DATA ? sample18 : File('day_20_input.txt').readAsStringSync());
+  var puzzleInput = (USE_SAMPLE_DATA
+      ? sample10
+      : File('day_20_input.txt').readAsStringSync());
 
   if (DEBUG) print('Original puzzle input: $puzzleInput');
 
@@ -67,9 +91,18 @@ main() {
 
   var tree = buildTree(puzzleInput);
 
-  var depth = tree.depth;
-  if (!USE_SAMPLE_DATA) assert(depth == 4778);
-  print('\nPart one answer: $depth');
+  var height = tree.height;
+  if (!USE_SAMPLE_DATA) assert(height == 4778);
+  print('\nPart one answer: $height');
+
+  // Part two
+
+  var numDoorsList = bfsDistances(tree);
+  var numberOfFarAwayRooms = numDoorsList.where((d) => d >= 1000).length;
+
+//  if (!USE_SAMPLE_DATA) assert(numberOfFarAwayRooms == 8459);
+
+  print('Far away rooms: $numberOfFarAwayRooms');
 }
 
 /// Return a tree given puzzle input.
@@ -81,25 +114,37 @@ Node buildTree(String puzzleInput) {
 
   var stack = Queue<Node>();
 
-  for (var i = 2; i < puzzleInput.length; ++i) {
+  for (var i = 2; i < puzzleInput.length - 1; ++i) {
     if (puzzleInput[i] == '(') {
       stack.addFirst(currentNode); // push
-    }
-
-    if (puzzleInput[i] == '|') {
+    } else if (puzzleInput[i] == '|') {
       currentNode = stack.first; // peek
-    }
-
-    if (puzzleInput[i] == ')') {
+    } else if (puzzleInput[i] == ')') {
       currentNode = stack.removeFirst(); // pop
-    }
-
-    if ('NEWS'.contains(puzzleInput[i])) {
-      var childNode = Node(puzzleInput[i]);
+    } else {
+      var childNode = Node.withParent(puzzleInput[i], currentNode);
       currentNode.addChild(childNode);
       currentNode = childNode;
     }
   }
 
   return rootNode;
+}
+
+/// Traverse tree with breadth first search.
+/// Return list of distances of each node to root.
+List<int> bfsDistances(Node root) {
+  var depths = List<int>();
+  var stack = Queue<Node>();
+  stack.addFirst(root);
+  while (stack.isNotEmpty) {
+    var currentNode = stack.removeFirst();
+    for (var child in currentNode.children) {
+      if (child.visited == false) stack.addFirst(child);
+    }
+    depths.add(currentNode.distanceTo(root));
+    currentNode.visited = true;
+  }
+  assert(depths.length == Node.length);
+  return depths;
 }
