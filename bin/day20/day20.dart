@@ -3,38 +3,12 @@
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
+import 'package:quiver/core.dart';
 
 const DEBUG = false;
 const USE_SAMPLE_DATA = false;
 
-class Room {
-  int x, y;
-
-  Room(this.x, this.y);
-
-  // Override hashCode using strategy from Effective Java,
-  // Chapter 11.
-  @override
-  int get hashCode {
-    int result = 17;
-    result = 37 * result + x.hashCode;
-    result = 37 * result + y.hashCode;
-    return result;
-  }
-
-  // You should generally implement operator == if you
-  // override hashCode.
-  @override
-  bool operator ==(dynamic other) {
-    if (other is! Room) return false;
-    Room otherRoom = other;
-    return (otherRoom.x == x && otherRoom.y == y);
-  }
-
-  @override
-  toString() => "($x,$y)";
-}
-
+/// Used in method 1
 class Node {
   String value;
   Node parent;
@@ -84,6 +58,22 @@ class Node {
   }
 }
 
+/// Room with (x,y) coordinates.  Used as key in method 2.
+class Room {
+  int x, y;
+
+  Room(this.x, this.y);
+
+  @override
+  bool operator ==(o) => o is Room && x == o.x && y == o.y;
+
+  @override
+  int get hashCode => hash2(x.hashCode, y.hashCode);
+
+  @override
+  toString() => "($x,$y)";
+}
+
 main() {
   /*
   Examples:
@@ -101,12 +91,13 @@ main() {
   var sample31 =
       r'^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$';
 
-  var puzzleInput =
-      (USE_SAMPLE_DATA ? sample3 : File('day_20_input.txt').readAsStringSync());
+  var puzzleInput = (USE_SAMPLE_DATA
+      ? sample18
+      : File('day_20_input.txt').readAsStringSync());
 
   /*
    Method 1: build n-ary tree.  Height is part 1 answer.
-   Part 2 answer should be BFS, calculate distance to root, and find
+   Part 2 answer should be BFS, calculate distance from node to root, return
    nodes with distance >= 1000.  However, there appears to be a bug.
    Gave up and used method 2.
    */
@@ -122,14 +113,14 @@ main() {
     return '${m.group(0).substring(0, halfway)})';
   });
 
-  var tree = buildTree(modifiedPuzzleInput);
+  final tree = buildTree(modifiedPuzzleInput);
 
-  var height = tree.height;
+  final height = tree.height;
   if (!USE_SAMPLE_DATA) assert(height == 4778);
   print('\nPart one answer, method 1: $height');
 
-  var numDoorsList = bfsDistances(tree);
-  var numberOfFarAwayRooms1 = numDoorsList.where((d) => d >= 1000).length;
+  final numDoorsList = bfsDistances(tree);
+  final numberOfFarAwayRooms1 = numDoorsList.where((d) => d >= 1000).length;
 
   print('Rooms >= 1000 doors away, method 1: $numberOfFarAwayRooms1');
 
@@ -140,68 +131,69 @@ main() {
    Part 2 answer is number of rooms >= 1000 doors away.
    */
 
-  var maze = exploreRooms(puzzleInput);
-  var maxDistance = maze.values.reduce(max);
-  print('Part one answer, method 2: $maxDistance');
-  var numberOfFarAwayRooms2 = maze.values.where((d) => d >= 1000).length;
+  final maze = exploreRooms(puzzleInput);
+  final method2MaxDistance = maze.values.reduce(max);
+  print('Part one answer, method 2: $method2MaxDistance');
+  if (!USE_SAMPLE_DATA) assert(method2MaxDistance == 4778);
+  final numberOfFarAwayRooms2 = maze.values.where((d) => d >= 1000).length;
   print('Rooms >= 1000 doors away, method 2: $numberOfFarAwayRooms2');
   if (!USE_SAMPLE_DATA) assert(numberOfFarAwayRooms2 == 8459);
 }
 
-Map<String, int> exploreRooms(String puzzleInput) {
-  var maze = Map<String, int>();
-  var stack = Queue<List<int>>();
-
-//  Room currentRoom;
-
-  var x = 0, y = 0, distance = 0;
+/// Explore all rooms in puzzleInput.  Return map of room -> distance
+/// from start.
+Map<Room, int> exploreRooms(String puzzleInput) {
+  var maze = Map<Room, int>();
+  var stack = Queue<Room>();
+  Room currentRoom;
+  var distance = 0;
 
   for (var i = 0; i < puzzleInput.length; ++i) {
     switch (puzzleInput[i]) {
       case '^':
         // First room
-//        currentRoom = Room(0, 0);
+        currentRoom = Room(0, 0);
         break;
       case '(':
-        stack.addFirst([x, y]); // push
+        stack.addFirst(Room(currentRoom.x, currentRoom.y)); // push
         break;
       case '|':
-        x = stack.first[0]; // peek
-        y = stack.first[1];
+        // Instantiate new room, otherwise you'll
+        // change values on stack while peeking.
+        currentRoom = Room(stack.first.x, stack.first.y); // peek
         break;
       case ')':
-        var currentRoom = stack.removeFirst(); // pop
-        x = currentRoom[0];
-        y = currentRoom[1];
+        currentRoom = stack.removeFirst(); // pop
         break;
       case 'N':
-        --y;
+        --currentRoom.y;
         break;
       case 'E':
-        ++x;
+        ++currentRoom.x;
         break;
       case 'W':
-        --x;
+        --currentRoom.x;
         break;
       case 'S':
-        ++y;
+        ++currentRoom.y;
         break;
       case r'$':
         // Last room
         break;
       case '\n':
-        // When reading from a file, Dart appears to append a newline
+        // When reading string from a file, Dart appears to append a newline
         break;
       default:
-        throw "Should not be here";
+        throw "Should never be here";
         break;
     }
-    if (maze.containsKey('$x,$y')) {
+
+    if (maze.containsKey(currentRoom)) {
       // Have already visited this room
-      distance = maze['$x,$y'];
+      distance = maze[currentRoom];
     } else {
       // Add new room
-      maze['$x,$y'] = distance;
+      maze[Room(currentRoom.x, currentRoom.y)] = distance;
     }
     ++distance;
   }
