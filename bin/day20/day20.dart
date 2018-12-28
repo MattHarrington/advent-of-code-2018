@@ -7,6 +7,34 @@ import 'dart:math';
 const DEBUG = false;
 const USE_SAMPLE_DATA = false;
 
+class Room {
+  int x, y;
+
+  Room(this.x, this.y);
+
+  // Override hashCode using strategy from Effective Java,
+  // Chapter 11.
+  @override
+  int get hashCode {
+    int result = 17;
+    result = 37 * result + x.hashCode;
+    result = 37 * result + y.hashCode;
+    return result;
+  }
+
+  // You should generally implement operator == if you
+  // override hashCode.
+  @override
+  bool operator ==(dynamic other) {
+    if (other is! Room) return false;
+    Room otherRoom = other;
+    return (otherRoom.x == x && otherRoom.y == y);
+  }
+
+  @override
+  toString() => "($x,$y)";
+}
+
 class Node {
   String value;
   Node parent;
@@ -73,36 +101,112 @@ main() {
   var sample31 =
       r'^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$';
 
-  var puzzleInput = (USE_SAMPLE_DATA
-      ? sample10
-      : File('day_20_input.txt').readAsStringSync());
+  var puzzleInput =
+      (USE_SAMPLE_DATA ? sample3 : File('day_20_input.txt').readAsStringSync());
 
-  if (DEBUG) print('Original puzzle input: $puzzleInput');
+  /*
+   Method 1: build n-ary tree.  Height is part 1 answer.
+   Part 2 answer should be BFS, calculate distance to root, and find
+   nodes with distance >= 1000.  However, there appears to be a bug.
+   Gave up and used method 2.
+   */
 
   // Deal with "empty options" like "(WNSE|)".
   // All empty options appear to retrace their steps
   // and end up where they started. Cutting empty options
   // in half allows them to be accurately added to the tree.
-  var emptyOptionRegex = RegExp(r'\([NEWS|]*\|\)');
-  puzzleInput = puzzleInput.replaceAllMapped(emptyOptionRegex, (Match m) {
+  final emptyOptionRegex = RegExp(r'\([NEWS|]*\|\)');
+  final modifiedPuzzleInput =
+      puzzleInput.replaceAllMapped(emptyOptionRegex, (Match m) {
     int halfway = (m.group(0).length / 2).truncate();
     return '${m.group(0).substring(0, halfway)})';
   });
 
-  var tree = buildTree(puzzleInput);
+  var tree = buildTree(modifiedPuzzleInput);
 
   var height = tree.height;
   if (!USE_SAMPLE_DATA) assert(height == 4778);
-  print('\nPart one answer: $height');
-
-  // Part two
+  print('\nPart one answer, method 1: $height');
 
   var numDoorsList = bfsDistances(tree);
-  var numberOfFarAwayRooms = numDoorsList.where((d) => d >= 1000).length;
+  var numberOfFarAwayRooms1 = numDoorsList.where((d) => d >= 1000).length;
 
-//  if (!USE_SAMPLE_DATA) assert(numberOfFarAwayRooms == 8459);
+  print('Rooms >= 1000 doors away, method 1: $numberOfFarAwayRooms1');
 
-  print('Far away rooms: $numberOfFarAwayRooms');
+  /*
+   Method 2.  Traverse puzzle input and store distance from start in a map.
+   If the map already contains a key, reset the distance since we've already
+   been to that position.  Part 1 answer is room with greatest distance.
+   Part 2 answer is number of rooms >= 1000 doors away.
+   */
+
+  var maze = exploreRooms(puzzleInput);
+  var maxDistance = maze.values.reduce(max);
+  print('Part one answer, method 2: $maxDistance');
+  var numberOfFarAwayRooms2 = maze.values.where((d) => d >= 1000).length;
+  print('Rooms >= 1000 doors away, method 2: $numberOfFarAwayRooms2');
+  if (!USE_SAMPLE_DATA) assert(numberOfFarAwayRooms2 == 8459);
+}
+
+Map<String, int> exploreRooms(String puzzleInput) {
+  var maze = Map<String, int>();
+  var stack = Queue<List<int>>();
+
+//  Room currentRoom;
+
+  var x = 0, y = 0, distance = 0;
+
+  for (var i = 0; i < puzzleInput.length; ++i) {
+    switch (puzzleInput[i]) {
+      case '^':
+        // First room
+//        currentRoom = Room(0, 0);
+        break;
+      case '(':
+        stack.addFirst([x, y]); // push
+        break;
+      case '|':
+        x = stack.first[0]; // peek
+        y = stack.first[1];
+        break;
+      case ')':
+        var currentRoom = stack.removeFirst(); // pop
+        x = currentRoom[0];
+        y = currentRoom[1];
+        break;
+      case 'N':
+        --y;
+        break;
+      case 'E':
+        ++x;
+        break;
+      case 'W':
+        --x;
+        break;
+      case 'S':
+        ++y;
+        break;
+      case r'$':
+        // Last room
+        break;
+      case '\n':
+        // When reading from a file, Dart appears to append a newline
+        break;
+      default:
+        throw "Should not be here";
+        break;
+    }
+    if (maze.containsKey('$x,$y')) {
+      // Have already visited this room
+      distance = maze['$x,$y'];
+    } else {
+      // Add new room
+      maze['$x,$y'] = distance;
+    }
+    ++distance;
+  }
+
+  return maze;
 }
 
 /// Return a tree given puzzle input.
