@@ -1,5 +1,12 @@
 // https://adventofcode.com/2018/day/18
 
+/*
+For part 2, set the clock to high value like 1000.  Note that the sequence
+repeats starting after minute 471.  The frequency of repeats is 56.
+(1,000,000,000 - 471) % 56 = 25.  Beginning at minute 471, count from 0
+to 25.  That value is 207998, and will be the value at 1B.
+ */
+
 import 'dart:io';
 
 const USE_SAMPLE_DATA = false;
@@ -52,13 +59,13 @@ main() {
       }
     }
     ++clock;
-    if (clock % 10000 == 0) {
-      print('After $clock minutes:');
-      print('--> Resources: ${computeResources(newGrid)}');
-//      printGrid(newGrid);
-    }
+
+    print('After $clock minutes:');
+    print('--> Resources: ${computeResources(newGrid)}');
+    printGrid(newGrid);
+
     grid = copyGrid(newGrid);
-  } while (clock < 1000000000);
+  } while (clock < 10);
 }
 
 int computeResources(List<List<String>> grid) {
@@ -172,5 +179,3 @@ void printGrid(List<List<String>> grid) {
   }
   print('');
 }
-
-// 207998 correct
