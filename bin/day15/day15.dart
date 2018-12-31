@@ -89,7 +89,7 @@ class Point extends Comparable<Point> {
 
   @override
 
-  /// Compare distances. If tied, then compare reading order.
+  /// Compare [distance]. If tied, then compare reading order.
   int compareTo(Point other) {
     int value;
     if (distance == other.distance) {
@@ -147,15 +147,10 @@ main() {
         }
       }
 
-      // If potential targets, attack target with lowest HP
       if (potentialTargetsToAttack.isNotEmpty) {
-        potentialTargetsToAttack.sort(Unit.compareHitPoints);
-        var attackedTarget = potentialTargetsToAttack.first;
-        player.attack(attackedTarget);
-        if (!attackedTarget.alive)
-          nextGrid[attackedTarget.y][attackedTarget.x] = '.';
+        attack(player, potentialTargetsToAttack, nextGrid);
         grid = nextGrid;
-        continue; // Go to next player
+        continue;
       }
 
       // No potential targets, so move
@@ -173,7 +168,7 @@ main() {
         }
       }
 
-      // Then attack
+      // Find targets
       for (var target in units
           .where((u) => u.alive && player.runtimeType != u.runtimeType)) {
         // Identify open squares in range of each target
@@ -182,18 +177,15 @@ main() {
         if (openSquares.contains(Point(player.x, player.y))) {
           // Already in range to attack
           potentialTargetsToAttack.add(target);
-        } else {}
+        }
       }
-      // Attack target with lowest HP
+
+      // Attack
       if (potentialTargetsToAttack.isNotEmpty) {
-        potentialTargetsToAttack.sort(Unit.compareHitPoints);
-        var attackedTarget = potentialTargetsToAttack.first;
-        player.attack(attackedTarget);
-        if (!attackedTarget.alive)
-          nextGrid[attackedTarget.y][attackedTarget.x] = '.';
+        attack(player, potentialTargetsToAttack, nextGrid);
       }
       grid = nextGrid;
-    } // player's turn is over
+    } // Player's turn is over
 
     ++round;
   }
@@ -220,6 +212,15 @@ main() {
   if (PART_ONE && !USE_SAMPLE_DATA) assert(round * hitPointSum == 269430);
   if (!PART_ONE && !USE_SAMPLE_DATA)
     assert(round * hitPointSum == 55160 && !anyWinnersDie);
+}
+
+/// [Unit] attacks a target
+void attack(Unit player, List<Unit> potentialTargetsToAttack,
+    List<List<String>> nextGrid) {
+  potentialTargetsToAttack.sort(Unit.compareHitPoints);
+  var attackedTarget = potentialTargetsToAttack.first;
+  player.attack(attackedTarget);
+  if (!attackedTarget.alive) nextGrid[attackedTarget.y][attackedTarget.x] = '.';
 }
 
 /// Move unit one step towards target

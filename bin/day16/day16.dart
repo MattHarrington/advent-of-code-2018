@@ -1,6 +1,5 @@
 // https://adventofcode.com/2018/day/16
 
-import 'dart:collection';
 import 'dart:io';
 import 'package:quiver/collection.dart';
 
