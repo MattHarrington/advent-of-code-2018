@@ -64,6 +64,7 @@ abstract class Unit {
 }
 
 class Elf extends Unit {
+  final _attackPower = 19;
   Elf(int x, int y) : super(x, y);
 }
 
@@ -115,7 +116,7 @@ main() {
 
   while (gameOn) {
     print('After $round rounds:');
-    printGrid(grid);
+//    printGrid(grid);
 
     units.sort(Unit.comparePositions);
     for (var player in units.where((u) => u.alive)) {
@@ -198,10 +199,15 @@ main() {
   }
   print('Round: ${round-1}');
   var hitPointSum = 0;
+  Type winner;
   for (var unit in units.where((u) => u.alive)) {
     hitPointSum += unit.hitPoints;
+    winner = unit.runtimeType;
   }
   print('hitPointSum: $hitPointSum');
+  print('winner: $winner');
+  var anyWinnersDie = units.any((u) => u.runtimeType == winner && u.alive == false);
+  print('anyWinnersDie: $anyWinnersDie');
 
 }
 
@@ -291,10 +297,10 @@ int shortestDistance(Point start, Point end, List<List<String>> grid) {
     }
   }
   grid[end.y][end.x] = originalEndUnitType;
-  if (distance == null) {
-//    printGrid(grid);
-    print('why null?');
-  }
+//  if (distance == null) {
+////    printGrid(grid);
+//    print('why null?');
+//  }
   return distance;
 }
 
@@ -355,3 +361,5 @@ void printGrid(List<List<String>> grid) {
     stdout.writeln();
   });
 }
+
+// 12480 too low
