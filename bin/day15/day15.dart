@@ -1,12 +1,11 @@
 // https://adventofcode.com/2018/day/15
-// https://stackoverflow.com/questions/37784324/shortest-path-in-a-grid
-// https://www.geeksforgeeks.org/shortest-distance-two-cells-matrix-grid/
 
 import 'dart:io';
 import 'dart:collection';
 import 'package:quiver/core.dart';
 
 const USE_SAMPLE_DATA = false;
+const PART_ONE = false;
 var units = List<Unit>();
 
 abstract class Unit {
@@ -47,7 +46,7 @@ abstract class Unit {
     return value;
   }
 
-  final _attackPower = 3;
+  var _attackPower = 3;
   var hitPoints = 200;
   int x, y;
   var alive = true;
@@ -64,40 +63,20 @@ abstract class Unit {
 }
 
 class Elf extends Unit {
-  final _attackPower = 19;
-  Elf(int x, int y) : super(x, y);
+  Elf(int x, int y) : super(x, y) {
+    if (!PART_ONE) _attackPower = 19;
+  }
 }
 
 class Goblin extends Unit {
   Goblin(int x, int y) : super(x, y);
 }
 
-class Point {
-  static int compareDistances(Point a, Point b) {
-    int value;
-    // If tied hitPoints, sort by reading order
-    if (a.distance == b.distance) {
-      if (a.x == b.x && a.y == b.y)
-        value = 0;
-      else if (a.y < b.y)
-        value = -1;
-      else if (a.y > b.y)
-        value = 1;
-      else if (a.y == b.y) {
-        if (a.x < b.x)
-          value = -1;
-        else if (a.x > b.x) value = 1;
-      }
-    } else if (a.distance < b.distance)
-      value = -1;
-    else if (a.distance > b.distance) value = 1;
-    return value;
-  }
-
+class Point extends Comparable<Point> {
   int x, y;
   int distance;
 
-  Point(this.x, this.y, {this.distance = 0});
+  Point(this.x, this.y, {this.distance = null});
 
   @override
   bool operator ==(o) => o is Point && x == o.x && y == o.y;
@@ -107,6 +86,29 @@ class Point {
 
   @override
   toString() => "($x,$y)";
+
+  @override
+
+  /// Compare distances. If tied, then compare reading order.
+  int compareTo(Point other) {
+    int value;
+    if (distance == other.distance) {
+      if (x == other.x && y == other.y)
+        value = 0;
+      else if (y < other.y)
+        value = -1;
+      else if (y > other.y)
+        value = 1;
+      else if (y == other.y) {
+        if (x < other.x)
+          value = -1;
+        else if (x > other.x) value = 1;
+      }
+    } else if (distance < other.distance)
+      value = -1;
+    else if (distance > other.distance) value = 1;
+    return value;
+  }
 }
 
 main() {
@@ -116,14 +118,13 @@ main() {
 
   while (gameOn) {
     print('After $round rounds:');
-//    printGrid(grid);
-
-    units.sort(Unit.comparePositions);
+    printGrid(grid);
+    units.sort(Unit.comparePositions); // Sorts according to reading order
     for (var player in units.where((u) => u.alive)) {
+      // Game over if no more targets
       if (units
           .where((u) => u.alive && player.runtimeType != u.runtimeType)
           .isEmpty) {
-        // Game over, no more targets
         gameOn = false;
         break;
       }
@@ -146,9 +147,7 @@ main() {
         }
       }
 
-      // Have now gone through all targets
-
-      // Attack target with lowest HP
+      // If potential targets, attack target with lowest HP
       if (potentialTargetsToAttack.isNotEmpty) {
         potentialTargetsToAttack.sort(Unit.compareHitPoints);
         var attackedTarget = potentialTargetsToAttack.first;
@@ -159,21 +158,22 @@ main() {
         continue; // Go to next player
       }
 
-      // Move then attack
+      // No potential targets, so move
       if (potentialSquaresToMoveTo.isNotEmpty) {
-        for (var end in potentialSquaresToMoveTo) {
-          end.distance = shortestDistance(Point(player.x, player.y), end, grid);
+        for (var destination in potentialSquaresToMoveTo) {
+          destination.distance =
+              shortestDistance(Point(player.x, player.y), destination, grid);
         }
         potentialSquaresToMoveTo.removeWhere(
-            (square) => square.distance == null); // unreachable squares
+            (square) => square.distance == null); // Remove unreachable squares
         if (potentialSquaresToMoveTo.isNotEmpty) {
-          potentialSquaresToMoveTo.sort(Point.compareDistances);
+          potentialSquaresToMoveTo.sort();
           var destination = potentialSquaresToMoveTo.first;
           move(player, destination, nextGrid);
         }
       }
 
-      // Attack here
+      // Then attack
       for (var target in units
           .where((u) => u.alive && player.runtimeType != u.runtimeType)) {
         // Identify open squares in range of each target
@@ -193,56 +193,69 @@ main() {
           nextGrid[attackedTarget.y][attackedTarget.x] = '.';
       }
       grid = nextGrid;
-    } // player
+    } // player's turn is over
 
     ++round;
   }
-  print('Round: ${round-1}');
+
+  // Loop ends in middle of round.
+  // Puzzle calls for last completed round.
+  round = round - 1;
+  print('Round: ${round}');
+
   var hitPointSum = 0;
   Type winner;
   for (var unit in units.where((u) => u.alive)) {
     hitPointSum += unit.hitPoints;
     winner = unit.runtimeType;
   }
+
   print('hitPointSum: $hitPointSum');
+  print('round * hitPointSum = ${round * hitPointSum}');
   print('winner: $winner');
-  var anyWinnersDie = units.any((u) => u.runtimeType == winner && u.alive == false);
+  var anyWinnersDie =
+      units.any((u) => u.runtimeType == winner && u.alive == false);
   print('anyWinnersDie: $anyWinnersDie');
 
+  if (PART_ONE && !USE_SAMPLE_DATA) assert(round * hitPointSum == 269430);
+  if (!PART_ONE && !USE_SAMPLE_DATA)
+    assert(round * hitPointSum == 55160 && !anyWinnersDie);
 }
 
+/// Move unit one step towards target
 void move(Unit start, Point target, List<List<String>> nextGrid) {
   final rows = nextGrid.length;
   final columns = nextGrid.first.length;
+  var destinations = List<Point>();
 
-  var potentialDestinations = List<Point>();
   // Up
   if (start.y > 0 && nextGrid[start.y - 1][start.x] == '.') {
-    potentialDestinations.add(Point(start.x, start.y - 1,
+    destinations.add(Point(start.x, start.y - 1,
         distance:
             shortestDistance(Point(start.x, start.y - 1), target, nextGrid)));
   }
   // Down
   if (start.y < columns - 1 && nextGrid[start.y + 1][start.x] == '.') {
-    potentialDestinations.add(Point(start.x, start.y + 1,
+    destinations.add(Point(start.x, start.y + 1,
         distance:
             shortestDistance(Point(start.x, start.y + 1), target, nextGrid)));
   }
   // Left
   if (start.x > 0 && nextGrid[start.y][start.x - 1] == '.') {
-    potentialDestinations.add(Point(start.x - 1, start.y,
+    destinations.add(Point(start.x - 1, start.y,
         distance:
             shortestDistance(Point(start.x - 1, start.y), target, nextGrid)));
   }
   // Right
   if (start.x < rows - 1 && nextGrid[start.y][start.x + 1] == '.') {
-    potentialDestinations.add(Point(start.x + 1, start.y,
+    destinations.add(Point(start.x + 1, start.y,
         distance:
             shortestDistance(Point(start.x + 1, start.y), target, nextGrid)));
   }
-  potentialDestinations.removeWhere((p) => p.distance == null);
-  potentialDestinations.sort(Point.compareDistances);
-  var destination = potentialDestinations.first;
+
+  destinations.removeWhere((p) => p.distance == null); // Unreachable dest.
+  destinations.sort();
+  var destination = destinations.first;
   var originalUnit = nextGrid[start.y][start.x];
   nextGrid[start.y][start.x] = '.';
   nextGrid[destination.y][destination.x] = originalUnit;
@@ -250,8 +263,12 @@ void move(Unit start, Point target, List<List<String>> nextGrid) {
   start.y = destination.y;
 }
 
+/// Return shortest distance between 2 points on a Cartesian grid
+/// with obstacles. BFS approach based on:
+/// https://stackoverflow.com/questions/37784324/shortest-path-in-a-grid
+/// https://www.geeksforgeeks.org/shortest-distance-two-cells-matrix-grid/
 int shortestDistance(Point start, Point end, List<List<String>> grid) {
-  var originalEndUnitType = grid[end.y][end.x];
+  final originalEndUnitType = grid[end.y][end.x];
   grid[end.y][end.x] = '.';
   final rows = grid.length;
   final columns = grid.first.length;
@@ -297,13 +314,11 @@ int shortestDistance(Point start, Point end, List<List<String>> grid) {
     }
   }
   grid[end.y][end.x] = originalEndUnitType;
-//  if (distance == null) {
-////    printGrid(grid);
-//    print('why null?');
-//  }
   return distance;
 }
 
+/// Return list of points in range around a target.  Point is
+/// in range if occupied by player or if open square.
 List<Point> getOpenSquaresInRange(
     Unit player, Point targetPoint, List<List<String>> grid) {
   var openSquares = List<Point>();
@@ -322,6 +337,7 @@ List<Point> getOpenSquaresInRange(
   return openSquares;
 }
 
+/// Parses puzzle input. Adds elves & goblins to [units] and returns a grid.
 List<List<String>> getStartingGrid() {
   var puzzleInput = USE_SAMPLE_DATA
       ? File("day_15_sample_1_input.txt").readAsLinesSync()
@@ -343,6 +359,7 @@ List<List<String>> getStartingGrid() {
   return grid;
 }
 
+/// Return a deep copy of a grid
 List<List<String>> copyGrid(List<List<String>> grid) {
   final rows = grid.length;
   final columns = grid.first.length;
@@ -355,11 +372,10 @@ List<List<String>> copyGrid(List<List<String>> grid) {
   return newGrid;
 }
 
+/// Prints grid
 void printGrid(List<List<String>> grid) {
   grid.forEach((row) {
     row.forEach((cell) => stdout.write(cell));
     stdout.writeln();
   });
 }
-
-// 12480 too low
