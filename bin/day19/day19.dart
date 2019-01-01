@@ -1,5 +1,9 @@
 // https://adventofcode.com/2018/day/19
 
+/*
+Computed part 2 manually.
+ */
+
 import 'dart:io';
 
 const USE_SAMPLE_DATA = false;
@@ -19,91 +23,59 @@ class Instruction {
 }
 
 main() {
-  var puzzleInputFilename = USE_SAMPLE_DATA
+  final puzzleInputFilename = USE_SAMPLE_DATA
       ? File('day_19_sample_input.txt')
       : File('day_19_input.txt');
-  var instructions = parsePuzzleInput(puzzleInputFilename);
-  var ip = int.parse(puzzleInputFilename.readAsLinesSync().first.split(' ')[1]);
+  final instructions = parsePuzzleInput(puzzleInputFilename);
+  final ipRegister =
+      int.parse(puzzleInputFilename.readAsLinesSync().first.split(' ')[1]);
 
   var registers = [0, 0, 0, 0, 0, 0];
+  var ip = registers[ipRegister];
 
-  while (registers[ip] < instructions.length) {
+  while (ip < instructions.length) {
     var sb = StringBuffer();
-    var instruction = instructions[registers[ip]];
-    sb.write('ip=${registers[ip]} $registers $instruction ');
-    registers = instruction
-        .opcode([null, instruction.A, instruction.B, instruction.C], registers);
+    var instruction = instructions[ip];
+    sb.write('ip=$ip $registers $instruction ');
+
+    registers[ipRegister] = ip;
+    registers = instruction.opcode(instruction, registers);
+    ip = registers[ipRegister];
 
     sb.write(registers);
     print(sb.toString());
-    ++registers[ip];
+    ++ip;
   }
-  var partOneAnswer = registers[0];
+  final partOneAnswer = registers[0];
   print('Part one: register 0 contains $partOneAnswer');
-  assert(partOneAnswer == 878);
+  if (!USE_SAMPLE_DATA) assert(partOneAnswer == 878);
 }
 
 List<Instruction> parsePuzzleInput(File puzzleInputFilename) {
   var puzzleInput = puzzleInputFilename.readAsLinesSync();
   var instructions = List<Instruction>();
+  var operations = {
+    'mulr': mulr,
+    'muli': muli,
+    'addi': addi,
+    'seti': seti,
+    'setr': setr,
+    'addr': addr,
+    'banr': banr,
+    'bani': bani,
+    'borr': borr,
+    'bori': bori,
+    'gtir': gtir,
+    'gtri': gtri,
+    'gtrr': gtrr,
+    'eqir': eqir,
+    'eqri': eqri,
+    'eqrr': eqrr
+  };
   for (var i = 1; i < puzzleInput.length; ++i) {
     var record = puzzleInput[i].split(' ');
-    Function func;
-    switch (record[0]) {
-      case 'mulr':
-        func = mulr;
-        break;
-      case 'muli':
-        func = muli;
-        break;
-      case 'addi':
-        func = addi;
-        break;
-      case 'seti':
-        func = seti;
-        break;
-      case 'setr':
-        func = setr;
-        break;
-      case 'addr':
-        func = addr;
-        break;
-      case 'banr':
-        func = banr;
-        break;
-      case 'bani':
-        func = bani;
-        break;
-      case 'borr':
-        func = borr;
-        break;
-      case 'bori':
-        func = bori;
-        break;
-      case 'gtir':
-        func = gtir;
-        break;
-      case 'gtri':
-        func = gtri;
-        break;
-      case 'gtrr':
-        func = gtrr;
-        break;
-      case 'eqir':
-        func = eqir;
-        break;
-      case 'eqri':
-        func = eqri;
-        break;
-      case 'eqrr':
-        func = eqrr;
-        break;
-      default:
-        throw ArgumentError;
-        break;
-    }
-    var instruction = Instruction(
-        func, int.parse(record[1]), int.parse(record[2]), int.parse(record[3]));
+    var instruction = Instruction(operations[record[0]], int.parse(record[1]),
+        int.parse(record[2]), int.parse(record[3]));
     instructions.add(instruction);
   }
   return instructions;
@@ -111,13 +83,12 @@ List<Instruction> parsePuzzleInput(File puzzleInputFilename) {
 
 /// mulr (multiply register) stores into register C the result of
 /// multiplying register A and register B.
-List<int> mulr(List<int> instruction, List<int> before) {
+List<int> mulr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] * before[B];
 
@@ -126,13 +97,12 @@ List<int> mulr(List<int> instruction, List<int> before) {
 
 /// muli (multiply immediate) stores into register C the
 /// result of multiplying register A and value B.
-List<int> muli(List<int> instruction, List<int> before) {
+List<int> muli(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] * B;
 
@@ -141,13 +111,12 @@ List<int> muli(List<int> instruction, List<int> before) {
 
 /// addi (add immediate) stores into register C the result
 /// of adding register A and value B.
-List<int> addi(List<int> instruction, List<int> before) {
+List<int> addi(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] + B;
 
@@ -156,13 +125,11 @@ List<int> addi(List<int> instruction, List<int> before) {
 
 /// seti (set immediate) stores value A into
 /// register C. (Input B is ignored.)
-List<int> seti(List<int> instruction, List<int> before) {
+List<int> seti(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int C = instruction.C;
 
   after[C] = A;
 
@@ -171,13 +138,11 @@ List<int> seti(List<int> instruction, List<int> before) {
 
 /// setr (set register) copies the contents of register A
 /// into register C. (Input B is ignored.)
-List<int> setr(List<int> instruction, List<int> before) {
+List<int> setr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int C = instruction.C;
 
   after[C] = before[A];
 
@@ -186,13 +151,12 @@ List<int> setr(List<int> instruction, List<int> before) {
 
 /// addr (add register) stores into register C the
 /// result of adding register A and register B.
-List<int> addr(List<int> instruction, List<int> before) {
+List<int> addr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] + before[B];
 
@@ -201,13 +165,12 @@ List<int> addr(List<int> instruction, List<int> before) {
 
 /// banr (bitwise AND register) stores into register C the
 /// result of the bitwise AND of register A and register B.
-List<int> banr(List<int> instruction, List<int> before) {
+List<int> banr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] & before[B];
 
@@ -216,13 +179,12 @@ List<int> banr(List<int> instruction, List<int> before) {
 
 /// bani (bitwise AND immediate) stores into register C
 /// the result of the bitwise AND of register A and value B.
-List<int> bani(List<int> instruction, List<int> before) {
+List<int> bani(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] & B;
 
@@ -231,13 +193,12 @@ List<int> bani(List<int> instruction, List<int> before) {
 
 /// borr (bitwise OR register) stores into register C the
 /// result of the bitwise OR of register A and register B.
-List<int> borr(List<int> instruction, List<int> before) {
+List<int> borr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] | before[B];
 
@@ -246,13 +207,12 @@ List<int> borr(List<int> instruction, List<int> before) {
 
 /// bori (bitwise OR immediate) stores into register C the
 /// result of the bitwise OR of register A and value B.
-List<int> bori(List<int> instruction, List<int> before) {
+List<int> bori(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = before[A] | B;
 
@@ -262,13 +222,12 @@ List<int> bori(List<int> instruction, List<int> before) {
 /// gtir (greater-than immediate/register) sets register C to 1
 /// if value A is greater than register B. Otherwise,
 /// register C is set to 0.
-List<int> gtir(List<int> instruction, List<int> before) {
+List<int> gtir(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (A > before[B] ? 1 : 0);
 
@@ -278,13 +237,12 @@ List<int> gtir(List<int> instruction, List<int> before) {
 /// gtri (greater-than register/immediate) sets register
 /// C to 1 if register A is greater than value B. Otherwise,
 /// register C is set to 0.
-List<int> gtri(List<int> instruction, List<int> before) {
+List<int> gtri(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (before[A] > B ? 1 : 0);
 
@@ -294,13 +252,12 @@ List<int> gtri(List<int> instruction, List<int> before) {
 /// gtrr (greater-than register/register) sets register C to 1
 /// if register A is greater than register B. Otherwise,
 /// register C is set to 0.
-List<int> gtrr(List<int> instruction, List<int> before) {
+List<int> gtrr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (before[A] > before[B] ? 1 : 0);
 
@@ -310,13 +267,12 @@ List<int> gtrr(List<int> instruction, List<int> before) {
 /// eqir (equal immediate/register) sets register C to 1
 /// if value A is equal to register B. Otherwise, register C
 /// is set to 0.
-List<int> eqir(List<int> instruction, List<int> before) {
+List<int> eqir(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (A == before[B] ? 1 : 0);
 
@@ -325,13 +281,12 @@ List<int> eqir(List<int> instruction, List<int> before) {
 
 /// eqri (equal register/immediate) sets register C to 1 if
 /// register A is equal to value B. Otherwise, register C is set to 0.
-List<int> eqri(List<int> instruction, List<int> before) {
+List<int> eqri(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (before[A] == B ? 1 : 0);
 
@@ -340,13 +295,12 @@ List<int> eqri(List<int> instruction, List<int> before) {
 
 /// eqrr (equal register/register) sets register C to 1 if register A
 /// is equal to register B. Otherwise, register C is set to 0.
-List<int> eqrr(List<int> instruction, List<int> before) {
+List<int> eqrr(Instruction instruction, List<int> before) {
   var after = List<int>.from(before);
-  var opcode = instruction[0];
 
-  int A = instruction[1];
-  int B = instruction[2];
-  int C = instruction[3];
+  int A = instruction.A;
+  int B = instruction.B;
+  int C = instruction.C;
 
   after[C] = (before[A] == before[B] ? 1 : 0);
 
