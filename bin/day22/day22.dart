@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:collection/collection.dart';
 
-const USE_SAMPLE_DATA = true;
+const USE_SAMPLE_DATA = false;
 
 enum Terrain { rocky, wet, narrow, M, T }
 
@@ -49,6 +49,7 @@ class Region extends Comparable<Region> {
   int x, y;
   Terrain terrain;
   int minutes;
+  Tools tool;
 
   List<Tools> get allowedTools {
     var tools = List<Tools>();
@@ -85,7 +86,7 @@ class Region extends Comparable<Region> {
   }
 
   @override
-  toString() => '($x,$y) ${terrainToString(terrain)}';
+  toString() => '($x,$y) ${terrainToString(terrain)} $minutes';
 }
 
 class Point {
@@ -107,8 +108,12 @@ main() {
 //  print('riskLevel: $riskLevel');
   print('after generating map...');
   printGrid(caveMap);
-  var answer = dijkstra(caveMap, target);
-  print(answer);
+  var partTwoAnswer = dijkstra(caveMap, target);
+  print(partTwoAnswer);
+  if (USE_SAMPLE_DATA)
+    assert(partTwoAnswer == 45);
+  else
+    assert(partTwoAnswer == 980);
 }
 
 List<List<String>> getRiskLevel(List<List<int>> erosionGrid, Point target) {
@@ -155,75 +160,91 @@ List<List<String>> getRiskLevel(List<List<int>> erosionGrid, Point target) {
 }
 
 int dijkstra(List<List<String>> grid, Point target) {
-  final rows = grid.length;
-  final columns = grid.first.length;
-  var visited = List.generate(rows, (_) => List<bool>.filled(columns, false));
-  var minutes = List.generate(rows, (_) => List<int>.filled(columns, null));
-  var pq = PriorityQueue<Region>();
-
   grid[0][0] = '.';
   grid[target.y][target.x] = '.';
+  final rows = grid.length;
+  final columns = grid.first.length;
+  var minutes = List.generate(
+      rows, (_) => List.generate(columns, (_) => List<int>.filled(3, null)));
+  var visited = List.generate(
+      rows, (_) => List.generate(columns, (_) => List<bool>.filled(3, false)));
+  var pq = PriorityQueue<Region>();
+
+  minutes[0][0][Tools.torch.index] = 0;
 
   var start = Region(0, 0, stringToTerrain(grid[0][0]));
   start.terrain = Terrain.rocky;
   start.minutes = 0;
-  var previousRegion = start;
-  var currentTool = Tools.torch;
-  minutes[0][0] = 0;
+  start.tool = Tools.torch;
+
   pq.add(start);
+
   while (pq.isNotEmpty) {
     var currentRegion = pq.removeFirst();
     var x = currentRegion.x;
     var y = currentRegion.y;
-    if (visited[y][x]) continue;
-    visited[y][x] = true;
+    if (visited[y][x][currentRegion.tool.index]) continue;
+    visited[y][x][currentRegion.tool.index] = true;
     if (x == target.x && y == target.y) {
-      if (currentTool != Tools.torch) minutes[y][x] += 7;
+      var answer = minutes[y][x][currentRegion.tool.index];
+      if (currentRegion.tool != Tools.torch) {
+        answer += 7;
+        minutes[y][x][Tools.torch.index] = answer;
+      }
       break;
     }
 
-//    var allowed = currentRegion.allowedTools;
-    if (!currentRegion.allowedTools.contains(currentTool)) {
-      currentTool =
-          previousRegion.allowedTools.firstWhere((tool) => tool != currentTool);
-    }
-
     var neighbors = List<Region>();
-    if (x > 0 && !visited[y][x - 1]) {
-      // left
+
+    // left
+    if (x > 0 && !visited[y][x - 1][currentRegion.tool.index]) {
       var neighbor = Region(x - 1, y, stringToTerrain(grid[y][x - 1]));
       neighbors.add(neighbor);
     }
-    if (x < columns - 1 && !visited[y][x + 1]) {
-      // right
+    // right
+    if (x < columns - 1 && !visited[y][x + 1][currentRegion.tool.index]) {
       var neighbor = Region(x + 1, y, stringToTerrain(grid[y][x + 1]));
       neighbors.add(neighbor);
     }
-    if (y > 0 && !visited[y - 1][x]) {
-      // up
+    // up
+    if (y > 0 && !visited[y - 1][x][currentRegion.tool.index]) {
       var neighbor = Region(x, y - 1, stringToTerrain(grid[y - 1][x]));
       neighbors.add(neighbor);
     }
-    if (y < rows - 1 && !visited[y + 1][x]) {
-      // down
+    // down
+    if (y < rows - 1 && !visited[y + 1][x][currentRegion.tool.index]) {
       var neighbor = Region(x, y + 1, stringToTerrain(grid[y + 1][x]));
       neighbors.add(neighbor);
     }
+
     for (var neighbor in neighbors) {
-      int m = neighbor.allowedTools.contains(currentTool) ? 1 : 8;
-      var newMinutesCandidate = m + minutes[y][x];
-      if (minutes[neighbor.y][neighbor.x] == null) {
-        minutes[neighbor.y][neighbor.x] = newMinutesCandidate;
+      // if no tool change required, m = 1
+      // if tool change required, m = 8 and change tool
+
+      int m;
+      if (neighbor.allowedTools.contains(currentRegion.tool)) {
+        m = 1;
+        neighbor.tool = currentRegion.tool;
       } else {
-        minutes[neighbor.y][neighbor.x] =
-            min(minutes[neighbor.y][neighbor.x], newMinutesCandidate);
+        m = 1 + 7;
+        neighbor.tool = currentRegion.allowedTools
+            .firstWhere((tool) => tool != currentRegion.tool);
       }
-      neighbor.minutes = minutes[neighbor.y][neighbor.x];
+
+      var newMinutesCandidate = m + minutes[y][x][currentRegion.tool.index];
+      if (minutes[neighbor.y][neighbor.x][neighbor.tool.index] == null) {
+        minutes[neighbor.y][neighbor.x][neighbor.tool.index] =
+            newMinutesCandidate;
+      } else {
+        minutes[neighbor.y][neighbor.x][neighbor.tool.index] = min(
+            minutes[neighbor.y][neighbor.x][neighbor.tool.index],
+            newMinutesCandidate);
+      }
+      neighbor.minutes = minutes[neighbor.y][neighbor.x][neighbor.tool.index];
       pq.add(neighbor);
     }
-    previousRegion = currentRegion;
   }
-  return minutes[target.y][target.x];
+  return minutes[target.y][target.x][Tools.torch.index];
 }
 
 void processGrids(
@@ -251,8 +272,8 @@ void processGrids(
 }
 
 List<List<int>> getEmptyGrid(Point p) {
-  final rows = p.y + 1 + 20;
-  final columns = p.x + 1 + 20;
+  final rows = p.y + 1 + 100;
+  final columns = p.x + 1 + 100;
   var grid = List.generate(rows, (_) => List<int>.filled(columns, null));
   return grid;
 }
