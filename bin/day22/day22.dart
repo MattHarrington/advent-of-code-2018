@@ -1,7 +1,14 @@
 // https://adventofcode.com/2018/day/22
 
 /*
-Tried enums in this solution versus magic strings.
+Tried enums in this solution to avoid magic strings.
+
+Instead of padding around the target to accommodate paths
+greater than the target's coordinates, one could use
+a function to return the erosion level at any (x,y) instead
+of storing its pre-computed values in a 2D array with
+finite dimensions.  This makes the cave map lazily evaluated
+and not confined to predetermined dimensions.
  */
 
 import 'dart:io';
@@ -9,11 +16,12 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 
 const USE_SAMPLE_DATA = false;
-const PADDING = 100; // Accommodates paths beyond target
+const PADDING = 50; // Accommodates paths beyond target
 
 enum Terrain { rocky, wet, narrow }
 
-/// Helper function because can't override toString() on enum
+/// Helper function because can't override toString() on enum.
+/// Used when printing the cave map.
 String terrainToString(Terrain terrain) {
   switch (terrain) {
     case Terrain.rocky:
@@ -79,6 +87,9 @@ class Point {
 }
 
 main() {
+  var sw = Stopwatch();
+  sw.start();
+
   var depth = USE_SAMPLE_DATA ? 510 : 3339;
   var target = USE_SAMPLE_DATA ? Point(10, 10) : Point(10, 715);
 
@@ -86,7 +97,7 @@ main() {
   var caveMap = getCaveMap(erosionLevel);
   assert(caveMap[0][0] == Terrain.rocky &&
       caveMap[target.y][target.x] == Terrain.rocky);
-  printGrid(caveMap, target);
+  if (USE_SAMPLE_DATA) printGrid(caveMap, target, Point(15, 15));
 
   var partOneAnswer = getRiskLevel(caveMap, target);
   print('partOneAnswer: $partOneAnswer');
@@ -101,6 +112,9 @@ main() {
     assert(partOneAnswer == 7915);
     assert(partTwoAnswer == 980);
   }
+
+  sw.stop();
+  print("\nElapsed seconds: ${sw.elapsedMilliseconds / 1000}");
 }
 
 List<List<Terrain>> getCaveMap(List<List<int>> erosionLevel) {
@@ -129,9 +143,9 @@ List<List<Terrain>> getCaveMap(List<List<int>> erosionLevel) {
   return caveMap;
 }
 
+/// From a map of the cave and a target, compute the risk level
+/// as described in the problem statement.
 int getRiskLevel(List<List<Terrain>> caveMap, Point target) {
-  final rows = caveMap.length;
-  final columns = caveMap.first.length;
   int riskLevel = 0;
   for (var y = 0; y <= target.y; ++y) {
     for (var x = 0; x <= target.x; ++x) {
@@ -153,14 +167,21 @@ int getRiskLevel(List<List<Terrain>> caveMap, Point target) {
   return riskLevel;
 }
 
+/// Return lowest number of minutes it takes to reach target
+/// using Dijkstra's shortest path algorithm.  Cave regions are
+/// a weighted graph, with the weights being either 1 or 8.
 int dijkstra(List<List<Terrain>> grid, Point target) {
   final rows = grid.length;
   final columns = grid.first.length;
+
+  // minutes and visited are 3D arrays, with the 3rd dimension
+  // containing the tool in use.
   var minutes = List.generate(
       rows, (_) => List.generate(columns, (_) => List<int>.filled(3, null)));
   minutes[0][0][Tool.torch.index] = 0;
   var visited = List.generate(
       rows, (_) => List.generate(columns, (_) => List<bool>.filled(3, false)));
+
   var pq = PriorityQueue<Region>();
 
   var startingRegion = Region(0, 0, grid[0][0]);
@@ -177,6 +198,8 @@ int dijkstra(List<List<Terrain>> grid, Point target) {
     if (visited[y][x][currentRegion.tool.index]) continue;
     visited[y][x][currentRegion.tool.index] = true;
     if (x == target.x && y == target.y) {
+      // Reached target, but ensure we're using a torch, as problem
+      // statement requires.
       if (currentRegion.tool != Tool.torch) {
         minutes[y][x][Tool.torch.index] =
             minutes[y][x][currentRegion.tool.index] + 7;
@@ -186,22 +209,22 @@ int dijkstra(List<List<Terrain>> grid, Point target) {
 
     var neighbors = List<Region>();
 
-    // left
+    // Left
     if (x > 0 && !visited[y][x - 1][currentRegion.tool.index]) {
       var neighbor = Region(x - 1, y, grid[y][x - 1]);
       neighbors.add(neighbor);
     }
-    // right
+    // Right
     if (x < columns - 1 && !visited[y][x + 1][currentRegion.tool.index]) {
       var neighbor = Region(x + 1, y, grid[y][x + 1]);
       neighbors.add(neighbor);
     }
-    // up
+    // Up
     if (y > 0 && !visited[y - 1][x][currentRegion.tool.index]) {
       var neighbor = Region(x, y - 1, grid[y - 1][x]);
       neighbors.add(neighbor);
     }
-    // down
+    // Down
     if (y < rows - 1 && !visited[y + 1][x][currentRegion.tool.index]) {
       var neighbor = Region(x, y + 1, grid[y + 1][x]);
       neighbors.add(neighbor);
@@ -237,9 +260,13 @@ int dijkstra(List<List<Terrain>> grid, Point target) {
   return minutes[target.y][target.x][Tool.torch.index];
 }
 
+/// Given a target position and depth, return a 2D array of
+/// erosion levels, as described in the problem statement.
 List<List<int>> getErosionLevel(Point target, int depth) {
   final rows = target.y + PADDING;
   final columns = target.x + PADDING;
+  // NB: geologicIndex not strictly required.  Terms can be combined
+  // into the erosionLevel calculation.
   var geologicIndex =
       List.generate(rows, (_) => List<int>.filled(columns, null));
   var erosionLevel =
@@ -254,27 +281,22 @@ List<List<int>> getErosionLevel(Point target, int depth) {
     erosionLevel[y][0] = (geologicIndex[y][0] + depth) % 20183;
   }
 
-//  geologicIndex[target.y][target.x] = 0;
-//  erosionLevel[target.y][target.x] = (0 + depth) % 20183;
+  assert(geologicIndex[0][0] == 0);
 
   for (var x = 1; x < columns; ++x) {
     for (var y = 1; y < rows; ++y) {
-      if (x == target.x && y == target.y) {
-        geologicIndex[target.y][target.x] = 0;
-        erosionLevel[target.y][target.x] = (0 + depth) % 20183;
-        continue;
-      }
       geologicIndex[y][x] = erosionLevel[y][x - 1] * erosionLevel[y - 1][x];
       erosionLevel[y][x] = (geologicIndex[y][x] + depth) % 20183;
     }
   }
+  erosionLevel[target.y][target.x] = (0 + depth) % 20183;
   return erosionLevel;
 }
 
 /// Prints grid
-void printGrid(List<List<Terrain>> grid, Point target) {
-  for (var y = 0; y <= target.y; ++y) {
-    for (var x = 0; x <= target.x; ++x) {
+void printGrid(List<List<Terrain>> grid, Point target, Point border) {
+  for (var y = 0; y <= border.y; ++y) {
+    for (var x = 0; x <= border.x; ++x) {
       String terrainString;
       switch (grid[y][x]) {
         case Terrain.rocky:
@@ -289,6 +311,8 @@ void printGrid(List<List<Terrain>> grid, Point target) {
         default:
           throw ArgumentError.value(grid[y][x]);
       }
+      if (x == 0 && y == 0) terrainString = 'M';
+      if (x == target.x && y == target.y) terrainString = 'T';
       stdout.write(terrainString);
     }
     stdout.writeln();
