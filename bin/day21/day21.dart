@@ -1,6 +1,19 @@
 // https://adventofcode.com/2018/day/21
 
+/*
+Strategy is to look at program instructions and note that only one
+examines register 0, namely "eqrr 5 0 3" at ip = 28.  Part 1: stop
+at ip = 28 and look at registers[5].  When that value equals
+registers[0], program will halt.  Part 2: Keep running program until
+the value in registers[5] at ip = 28 repeats.  Answer is registers[5]
+the previous time ip = 28.
+ */
+
 import 'dart:io';
+
+const registerZeroInitialValue = 0; // Answer = 12446070
+const PART_ONE = false;
+const DEBUG = false;
 
 class Instruction {
   Function opcode;
@@ -22,21 +35,43 @@ main() {
   final ipRegister =
       int.parse(puzzleInputFilename.readAsLinesSync().first.split(' ')[1]);
 
-  int registerZeroInitialValue = -3;
   var registers = [registerZeroInitialValue, 0, 0, 0, 0, 0];
   var ip = registers[ipRegister];
+  var repeats = Map<int, int>();
+  int haltCounter = 0;
+  int previousHaltValue;
 
   while (ip < instructions.length) {
     var sb = StringBuffer();
     var instruction = instructions[ip];
-    sb.write('ip=$ip $registers $instruction ');
+    
+    if (ip == 28) {
+      print(
+          'Cycle ${++haltCounter} ip=$ip. Will halt when reg 0 == ${registers[5]}');
+      if (PART_ONE) {
+        assert(registers[5] == 12446070);
+        break;
+      }
+      repeats.putIfAbsent(registers[5], () => 0);
+      ++repeats[registers[5]];
+      if (repeats[registers[5]] == 2) {
+        print('First repeat == ${registers[5]}');
+        print(
+            'Part 2 answer: Previous value of register[0]: $previousHaltValue');
+        assert(previousHaltValue == 13928239);
+        break;
+      }
+      previousHaltValue = registers[5];
+    }
+
+    if (DEBUG) sb.write('ip=$ip $registers $instruction ');
 
     registers[ipRegister] = ip;
     registers = instruction.opcode(instruction, registers);
     ip = registers[ipRegister];
 
-    sb.write(registers);
-    print(sb.toString());
+    if (DEBUG) sb.write(registers);
+    if (DEBUG) print(sb.toString());
     ++ip;
   }
   print('Program halted');
