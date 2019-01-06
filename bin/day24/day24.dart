@@ -3,6 +3,8 @@
 import 'dart:io';
 
 const USE_SAMPLE_DATA = false;
+const PART_TWO = true;
+final BOOST = USE_SAMPLE_DATA ? 1570 : 38; // 36 or 37 results in stalemate
 
 abstract class Combatant {
   List<Group> groups;
@@ -143,7 +145,9 @@ main() {
   var infectionArmy = getArmy(Infection, infectionRecords);
 
   var gameOn = true;
+  int round = 0;
   while (gameOn) {
+    print('round ${++round} starting...');
     // Target selection
     List<Group> allGroups = List.of(immuneSystemArmy.groups, growable: true);
     allGroups.addAll(infectionArmy.groups);
@@ -151,6 +155,7 @@ main() {
     allGroups.sort(); // TODO reverse sort
     allGroups = allGroups.reversed.toList();
     allGroups.forEach((group) => group.selectedForAttack = false);
+    for (var group in allGroups) print(group);
 
     for (var attacker in allGroups) {
       Group target;
@@ -180,20 +185,25 @@ main() {
     gameOn = false;
   }
 
-  int partOneAnswer;
-
+  int answer;
+  Type winner;
   if (immuneSystemArmy.groups.any((group) => group.alive)) {
-    partOneAnswer = immuneSystemArmy.groups
+    answer = immuneSystemArmy.groups
         .fold(0, (prev, element) => prev + element.units.length);
+    winner = ImmuneSystem;
   } else {
-    partOneAnswer = infectionArmy.groups
+    answer = infectionArmy.groups
         .fold(0, (prev, element) => prev + element.units.length);
+    winner = Infection;
   }
-  print('partOneAnswer: $partOneAnswer units remaining');
-  if (USE_SAMPLE_DATA)
-    assert(partOneAnswer == 5216);
-  else
-    assert(partOneAnswer == 22676);
+  print('\n$answer units remaining in the $winner army');
+  if (USE_SAMPLE_DATA && !PART_TWO)
+    assert(answer == 5216);
+  else if (!USE_SAMPLE_DATA && !PART_TWO)
+    assert(answer == 22676);
+  else if (!USE_SAMPLE_DATA && PART_TWO)
+    assert(answer == 4510);
+  else if (USE_SAMPLE_DATA && PART_TWO) assert(answer == 51);
 }
 
 Combatant getArmy(Type type, List<String> records) {
@@ -206,6 +216,7 @@ Combatant getArmy(Type type, List<String> records) {
     var unit = Unit();
     unit.hitPoints = int.parse(matches.group(2));
     unit.attackDamage = int.parse(matches.group(7));
+    if (PART_TWO && type == ImmuneSystem) unit.attackDamage += BOOST;
     unit.attackType = stringToAttackType(matches.group(8));
     unit.initiative = int.parse(matches.group(9));
 
