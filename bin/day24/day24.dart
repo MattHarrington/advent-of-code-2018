@@ -1,6 +1,7 @@
 // https://adventofcode.com/2018/day/24
 
 import 'dart:io';
+import 'dart:math';
 
 const USE_SAMPLE_DATA = true;
 
@@ -21,9 +22,30 @@ class Infection extends Combatant {
 }
 
 class Group extends Comparable<Group> {
+  static int damageSort(Group attacker, Group a, Group b) {
+    if (attacker.getDamage(a) == attacker.getDamage(b)) {
+      // todo: compare effective power, then initiative
+      return 0;
+    } else if (attacker.getDamage(a) > attacker.getDamage(b))
+      return 1;
+    else
+      return -1;
+  }
+
+  static int decreasingInitiativeSort(Group a, Group b) {
+    if (a.units.first.initiative == b.units.first.initiative)
+      return 0;
+    else if (a.units.first.initiative < b.units.first.initiative)
+      return 1;
+    else
+      return -1;
+  }
+
   List<Unit> units;
   Type armyType;
   bool selectedForAttack = false;
+  Group target;
+  bool alive = true;
 
   // the number of units in that group multiplied by their attack damage
   int get effectivePower => units.length * units.first.attackDamage;
@@ -33,12 +55,26 @@ class Group extends Comparable<Group> {
   }
 
   int getDamage(Group defender) {
-    if (defender.units.first.immunities.contains(units.first.attackType))
+    if (defender.units.first.immunities?.contains(units.first.attackType) ??
+        false)
       return 0;
-    else if (defender.units.first.weaknesses.contains(units.first.attackType))
+    else if (defender.units.first.weaknesses
+            ?.contains(units.first.attackType) ??
+        false)
       return 2 * effectivePower;
     else
       return effectivePower;
+  }
+
+  void attack(Group defender) {
+    int damage = getDamage(defender);
+    int defenderUnitsKilled = (damage / defender.units.first.hitPoints).floor();
+    if (defenderUnitsKilled >= defender.units.length) {
+      defender.alive = false;
+      defender.units.clear();
+      return;
+    }
+    defender.units = defender.units.sublist(defenderUnitsKilled);
   }
 
   @override
@@ -55,6 +91,9 @@ class Group extends Comparable<Group> {
     else
       return -1;
   }
+
+  @override
+  toString() => '$armyType group contains ${units.length} units';
 }
 
 class Unit {
@@ -109,20 +148,48 @@ main() {
     // Target selection
     List<Group> allGroups = List.of(immuneSystemArmy.groups, growable: true);
     allGroups.addAll(infectionArmy.groups);
-    allGroups.sort();
-    print(allGroups.length);
-    for (var attacker in allGroups.reversed) {
-      // TODO check if attacker is tied with next attacker. Rewrite as for loop?
+    allGroups = allGroups.where((group) => group.alive).toList();
+    allGroups.sort(); // TODO reverse sort
+    allGroups = allGroups.reversed.toList();
+    allGroups.forEach((group) => group.selectedForAttack = false);
+
+    for (var attacker in allGroups) {
+      Group target;
+      int maxDamage = 0;
       for (var defender in allGroups) {
         if (attacker.armyType == defender.armyType ||
             defender.selectedForAttack) continue;
+        if (attacker.getDamage(defender) > maxDamage) {
+          maxDamage = attacker.getDamage(defender);
+          target = defender;
+        }
+        ;
       }
+      target?.selectedForAttack = true;
+      attacker.target = target;
     }
 
-    // Attack
-
+    // Attack in decreasing order of initiative
+    allGroups.sort(Group.decreasingInitiativeSort);
+    for (var group in allGroups) {
+      if (group.target == null) continue;
+      group.attack(group.target);
+    }
+    if (immuneSystemArmy.groups.any((group) => group.alive) &&
+        infectionArmy.groups.any((group) => group.alive)) continue;
     gameOn = false;
   }
+
+  int partOneAnswer;
+
+  if (immuneSystemArmy.groups.any((group) => group.alive)) {
+    partOneAnswer = immuneSystemArmy.groups
+        .fold(0, (prev, element) => prev + element.units.length);
+  } else {
+    partOneAnswer = infectionArmy.groups
+        .fold(0, (prev, element) => prev + element.units.length);
+  }
+  print(partOneAnswer);
 }
 
 Combatant getArmy(Type type, List<String> records) {
@@ -160,8 +227,21 @@ Combatant getArmy(Type type, List<String> records) {
 
     int numberOfUnits = int.parse(matches.group(1));
     var group = Group(type);
-    group.units = List<Unit>.filled(numberOfUnits, unit);
+    group.units = List<Unit>.filled(numberOfUnits, unit, growable: true);
     combatant.groups.add(group);
   }
   return combatant;
+}
+
+Function sortRelativeTo(Group attacker) {
+  int comp(dynamic d1, dynamic d2) {
+//    return d1
+//        .getManhattanDistanceTo(attacker)
+//        .compareTo(d2.getManhattanDistanceTo(attacker));
+    var damage1 = attacker.getDamage(d1);
+    var damage2 = attacker.getDamage(d2);
+    return attacker.getDamage(d1).compareTo(attacker.getDamage(d2));
+  }
+
+  return comp;
 }
