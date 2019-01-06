@@ -1,9 +1,8 @@
 // https://adventofcode.com/2018/day/24
 
 import 'dart:io';
-import 'dart:math';
 
-const USE_SAMPLE_DATA = true;
+const USE_SAMPLE_DATA = false;
 
 abstract class Combatant {
   List<Group> groups;
@@ -47,7 +46,7 @@ class Group extends Comparable<Group> {
   Group target;
   bool alive = true;
 
-  // the number of units in that group multiplied by their attack damage
+  /// Number of units in group multiplied by their attack damage
   int get effectivePower => units.length * units.first.attackDamage;
 
   Group(this.armyType) {
@@ -172,7 +171,8 @@ main() {
     // Attack in decreasing order of initiative
     allGroups.sort(Group.decreasingInitiativeSort);
     for (var group in allGroups) {
-      if (group.target == null) continue;
+      // group may have been killed by earlier attack in this loop
+      if (!group.alive || group.target == null) continue;
       group.attack(group.target);
     }
     if (immuneSystemArmy.groups.any((group) => group.alive) &&
@@ -189,17 +189,19 @@ main() {
     partOneAnswer = infectionArmy.groups
         .fold(0, (prev, element) => prev + element.units.length);
   }
-  print(partOneAnswer);
+  print('partOneAnswer: $partOneAnswer units remaining');
+  if (USE_SAMPLE_DATA)
+    assert(partOneAnswer == 5216);
+  else
+    assert(partOneAnswer == 22676);
 }
 
 Combatant getArmy(Type type, List<String> records) {
   var combatant = (type == ImmuneSystem) ? ImmuneSystem() : Infection();
-  var betterRegex1 = RegExp(
-      r'(\d+) units each with (\d+) hit points (?:\((?:(weak to [a-z,\s]+);?\s?(immune to [a-z,\s]+)*;?\s?|(immune to [a-z,\s]+);?\s?(weak to [a-z,\s]+)*;?\s?)\))*\s?with an attack that does (\d+) ([a-z]+) damage at initiative (\d+)');
-  var betterRegex = RegExp(
+  var regex = RegExp(
       r'(\d+) units each with (\d+) hit points (?:\((?:(?:weak to ([a-z,\s]+));?\s?(?:immune to ([a-z,\s]+))*;?\s?|(?:immune to ([a-z,\s]+));?\s?(?:weak to ([a-z,\s]+))*;?\s?)\))*\s?with an attack that does (\d+) ([a-z]+) damage at initiative (\d+)');
   for (var record in records) {
-    var matches = betterRegex.allMatches(record).first;
+    var matches = regex.allMatches(record).first;
 
     var unit = Unit();
     unit.hitPoints = int.parse(matches.group(2));
@@ -231,17 +233,4 @@ Combatant getArmy(Type type, List<String> records) {
     combatant.groups.add(group);
   }
   return combatant;
-}
-
-Function sortRelativeTo(Group attacker) {
-  int comp(dynamic d1, dynamic d2) {
-//    return d1
-//        .getManhattanDistanceTo(attacker)
-//        .compareTo(d2.getManhattanDistanceTo(attacker));
-    var damage1 = attacker.getDamage(d1);
-    var damage2 = attacker.getDamage(d2);
-    return attacker.getDamage(d1).compareTo(attacker.getDamage(d2));
-  }
-
-  return comp;
 }
