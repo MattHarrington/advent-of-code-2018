@@ -3,7 +3,7 @@
 import 'dart:io';
 
 const USE_SAMPLE_DATA = false;
-const PART_TWO = true;
+const PART_TWO = false;
 final BOOST = USE_SAMPLE_DATA ? 1570 : 38; // 36 or 37 results in stalemate
 
 abstract class Combatant {
@@ -22,21 +22,29 @@ class Infection extends Combatant {
   }
 }
 
-class Group extends Comparable<Group> {
-  static int damageSort(Group attacker, Group a, Group b) {
-    if (attacker.getDamage(a) == attacker.getDamage(b)) {
-      // todo: compare effective power, then initiative
+class Group {
+  @Deprecated('Not used, but kept for future reference')
+  static Function getDamageComparator(Group attacker) {
+    int comparator(Group a, Group b) {
+      return attacker.getDamage(a).compareTo(attacker.getDamage(b));
+    }
+
+    return comparator;
+  }
+
+  static int compareDecreasingInitiative(Group a, Group b) {
+    if (a.units.first.initiative == b.units.first.initiative)
       return 0;
-    } else if (attacker.getDamage(a) > attacker.getDamage(b))
+    else if (a.units.first.initiative < b.units.first.initiative)
       return 1;
     else
       return -1;
   }
 
-  static int decreasingInitiativeSort(Group a, Group b) {
-    if (a.units.first.initiative == b.units.first.initiative)
-      return 0;
-    else if (a.units.first.initiative < b.units.first.initiative)
+  static int compareDecreasingEffectivePower(Group a, Group b) {
+    if (a.effectivePower == b.effectivePower)
+      return (compareDecreasingInitiative(a, b));
+    else if (a.effectivePower < b.effectivePower)
       return 1;
     else
       return -1;
@@ -48,12 +56,9 @@ class Group extends Comparable<Group> {
   Group target;
   bool alive = true;
 
-  /// Number of units in group multiplied by their attack damage
   int get effectivePower => units.length * units.first.attackDamage;
 
-  Group(this.armyType) {
-    units = List<Unit>();
-  }
+  Group(this.armyType) : units = List<Unit>() {}
 
   int getDamage(Group defender) {
     if (defender.units.first.immunities?.contains(units.first.attackType) ??
@@ -72,25 +77,10 @@ class Group extends Comparable<Group> {
     int defenderUnitsKilled = (damage / defender.units.first.hitPoints).floor();
     if (defenderUnitsKilled >= defender.units.length) {
       defender.alive = false;
-      defender.units.clear();
+      defender.units.clear(); // clear() fails on fixed-length lists
       return;
     }
     defender.units = defender.units.sublist(defenderUnitsKilled);
-  }
-
-  @override
-  int compareTo(Group other) {
-    if (effectivePower == other.effectivePower) {
-      if (units.first.initiative == other.units.first.initiative)
-        return 0;
-      else if (units.first.initiative > other.units.first.initiative)
-        return 1;
-      else
-        return -1;
-    } else if (effectivePower > other.effectivePower)
-      return 1;
-    else
-      return -1;
   }
 
   @override
@@ -137,7 +127,7 @@ main() {
   var puzzleInput = USE_SAMPLE_DATA
       ? File('day_24_sample_input.txt').readAsLinesSync()
       : File('day_24_input.txt').readAsLinesSync();
-  var immuneRecordsEnd = USE_SAMPLE_DATA ? 3 : 11;
+  var immuneRecordsEnd = USE_SAMPLE_DATA ? 3 : 11; // Only use w/supplied input
   var infectionsRecordsStart = USE_SAMPLE_DATA ? 5 : 13;
   var immuneRecords = puzzleInput.sublist(1, immuneRecordsEnd);
   var immuneSystemArmy = getArmy(ImmuneSystem, immuneRecords);
@@ -148,16 +138,19 @@ main() {
   int round = 0;
   while (gameOn) {
     print('round ${++round} starting...');
-    // Target selection
+
+    // Phase 1: Target selection
     List<Group> allGroups = List.of(immuneSystemArmy.groups, growable: true);
     allGroups.addAll(infectionArmy.groups);
     allGroups = allGroups.where((group) => group.alive).toList();
-    allGroups.sort(); // TODO reverse sort
-    allGroups = allGroups.reversed.toList();
-    allGroups.forEach((group) => group.selectedForAttack = false);
+    allGroups.sort(Group.compareDecreasingEffectivePower);
+    allGroups.forEach(
+        (group) => group.selectedForAttack = false); // Reset from prev round
+
     for (var group in allGroups) print(group);
 
     for (var attacker in allGroups) {
+      // Select target with maximum damage. Might be null.
       Group target;
       int maxDamage = 0;
       for (var defender in allGroups) {
@@ -173,8 +166,8 @@ main() {
       attacker.target = target;
     }
 
-    // Attack in decreasing order of initiative
-    allGroups.sort(Group.decreasingInitiativeSort);
+    // Phase 2: Attack in decreasing order of initiative
+    allGroups.sort(Group.compareDecreasingInitiative);
     for (var group in allGroups) {
       // group may have been killed by earlier attack in this loop
       if (!group.alive || group.target == null) continue;
@@ -196,7 +189,12 @@ main() {
         .fold(0, (prev, element) => prev + element.units.length);
     winner = Infection;
   }
-  print('\n$answer units remaining in the $winner army');
+  if (PART_TWO)
+    print('\nPart 2:');
+  else
+    print('\nPart 1:');
+  print('$answer units remaining in the $winner army');
+
   if (USE_SAMPLE_DATA && !PART_TWO)
     assert(answer == 5216);
   else if (!USE_SAMPLE_DATA && !PART_TWO)
