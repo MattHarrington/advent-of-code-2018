@@ -44,7 +44,7 @@ main() {
   while (ip < instructions.length) {
     var sb = StringBuffer();
     var instruction = instructions[ip];
-    
+
     if (ip == 28) {
       print(
           'Cycle ${++haltCounter} ip=$ip. Will halt when reg 0 == ${registers[5]}');
