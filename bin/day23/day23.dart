@@ -6,11 +6,99 @@ import 'dart:math';
 
 const USE_SAMPLE_DATA = false;
 
+class Point {
+  int x, y, z;
+
+  Point();
+
+  Point.fromCoordinates(this.x, this.y, this.z);
+}
+
+class Cube {
+  Point min, max;
+  int botsInRange = 0;
+
+  static Cube compareBotsInRange(Cube a, Cube b) {
+    if (a.botsInRange == b.botsInRange)
+//      throw StateError('Equal number of bots in range');
+      return b;
+    else if (a.botsInRange > b.botsInRange)
+      return a;
+    else
+      return b;
+  }
+
+  List<Cube> getSubVolumes() {
+    int d = ((max.x - min.x) / 2).floor();
+    var subVolume1 = Cube(Point.fromCoordinates(min.x, min.y, min.z),
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d));
+    var subVolume2 = Cube(Point.fromCoordinates(min.x, min.y, min.z + d),
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d * 2));
+    var subVolume3 = Cube(Point.fromCoordinates(min.x, min.y + d, min.z),
+        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d));
+    var subVolume4 = Cube(Point.fromCoordinates(min.x, min.y + d, min.z + d),
+        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d * 2));
+    var subVolume5 = Cube(Point.fromCoordinates(min.x + d, min.y, min.z),
+        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d));
+    var subVolume6 = Cube(Point.fromCoordinates(min.x + d, min.y, min.z + d),
+        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d * 2));
+    var subVolume7 = Cube(Point.fromCoordinates(min.x + d, min.y + d, min.z),
+        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d));
+    var subVolume8 = Cube(
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d),
+        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d * 2));
+    var subVolumes = [
+      subVolume1,
+      subVolume2,
+      subVolume3,
+      subVolume4,
+      subVolume5,
+      subVolume6,
+      subVolume7,
+      subVolume8
+    ];
+    return subVolumes;
+  }
+
+  Cube(this.min, this.max);
+
+  @override
+  toString() => '(${min.x}, ${min.y}, ${min.z}) (${max.x}, ${max.y}, ${max.z})';
+}
+
 class Nanobot {
   int x, y, z;
   int signalRadius;
 
+  static Nanobot compareSignalRadius(Nanobot a, Nanobot b) {
+    if (a.signalRadius > b.signalRadius)
+      return a;
+    else if (a.signalRadius < b.signalRadius)
+      return b;
+    else
+      return b;
+  }
+
+  int numberBotsInRadius(List<Nanobot> nanobots) {
+    int count = 0;
+    for (var nanobot in nanobots) {
+      if (manhattanDistanceTo(nanobot) <= signalRadius) ++count;
+    }
+    return count;
+  }
+
+  int manhattanDistanceTo(Nanobot other) {
+    return (x - other.x).abs() + (y - other.y).abs() + (z - other.z).abs();
+  }
+
+  int manhattanDistanceToPoint(Point p) {
+    return (x - p.x).abs() + (y - p.y).abs() + (z - p.z).abs();
+  }
+
   Nanobot(this.x, this.y, this.z, this.signalRadius);
+
+  @override
+  toString() => '($x,$y,$z) r=$signalRadius';
 }
 
 main() {
@@ -26,13 +114,22 @@ main() {
     'pos=<1,3,1>, r=1'
   ];
 
+  List<String> sampleInputPart2 = [
+    'pos=<10,12,12>, r=2',
+    'pos=<12,14,12>, r=2',
+    'pos=<16,12,12>, r=4',
+    'pos=<14,14,14>, r=6',
+    'pos=<50,50,50>, r=200',
+    'pos=<10,10,10>, r=5'
+  ];
+
   var puzzleInput = USE_SAMPLE_DATA
-      ? sampleInput
+      ? sampleInputPart2
       : File('day_23_input.txt').readAsLinesSync();
 
   var nanobots = parseInput(puzzleInput);
-  var largestRadiusBot = nanobots.reduce(compareMaxRadius);
-  var partOneAnswer = botsInRadius(largestRadiusBot, nanobots);
+  var largestRadiusBot = nanobots.reduce(Nanobot.compareSignalRadius);
+  var partOneAnswer = largestRadiusBot.numberBotsInRadius(nanobots);
   print('partOneAnswer: $partOneAnswer');
   if (!USE_SAMPLE_DATA) assert(partOneAnswer == 396);
 
@@ -49,33 +146,69 @@ main() {
   print('z range: $minZ to $maxZ = ${maxZ - minZ}');
   print('total coords: ${(maxX - minX) * (maxY - minY) * (maxZ - minZ)}');
 
-  var botsInRange = List<int>();
+  int s = pow(2, 28); // 268435456
+  var startingCube =
+      Cube(Point.fromCoordinates(-s, -s, -s), Point.fromCoordinates(s, s, s));
+
   for (var nanobot in nanobots) {
-    botsInRange.add(botsInRadius(nanobot, nanobots));
+    if (botInRangeOfCube(nanobot, startingCube)) ++startingCube.botsInRange;
   }
-  assert(botsInRange.length == nanobots.length);
-  botsInRange.sort();
-}
 
-int botsInRadius(Nanobot a, List<Nanobot> nanobots) {
-  int count = 0;
-  for (var nanobot in nanobots) {
-    if (manhattanDistance(a, nanobot) <= a.signalRadius) ++count;
+  var testCube =
+      Cube(Point.fromCoordinates(0, 0, 0), Point.fromCoordinates(16, 16, 16));
+  var testSubVolumes = testCube.getSubVolumes();
+
+  for (var i = 0; i <= 29; ++i) {
+    var subvolumes = startingCube.getSubVolumes();
+    for (var subvolume in subvolumes) {
+      for (var nanobot in nanobots) {
+        if (botInRangeOfCube(nanobot, subvolume)) ++subvolume.botsInRange;
+      }
+    }
+    // Choose subVolume with most bots
+    startingCube = subvolumes.reduce(Cube.compareBotsInRange);
   }
-  return count;
+
+  print(startingCube);
+  var testbot = Nanobot(startingCube.min.x, startingCube.min.y, startingCube.min.z, 0);
+  var numBotsInRange = 0;
+  for (var bot in nanobots) {
+    if (bot.manhattanDistanceToPoint(Point.fromCoordinates(12,12,12)) <= bot.signalRadius) ++numBotsInRange;
+  }
+  print('bots in range: $numBotsInRange');
+
 }
 
-int manhattanDistance(Nanobot a, Nanobot b) {
-  return (a.x - b.x).abs() + (a.y - b.y).abs() + (a.z - b.z).abs();
-}
-
-Nanobot compareMaxRadius(Nanobot a, Nanobot b) {
-  if (a.signalRadius > b.signalRadius)
-    return a;
-  else if (a.signalRadius < b.signalRadius)
-    return b;
+/// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/closest_point_aabb.html
+Point closestPointOnAABB(Nanobot bot, Cube aabb) {
+  var result = Point();
+  if (bot.x > aabb.max.x)
+    result.x = aabb.max.x;
+  else if (bot.x < aabb.min.x)
+    result.x = aabb.min.x;
   else
-    return null;
+    result.x = bot.x;
+  if (bot.y > aabb.max.y)
+    result.y = aabb.max.y;
+  else if (bot.y < aabb.min.y)
+    result.y = aabb.min.y;
+  else
+    result.y = bot.y;
+  if (bot.z > aabb.max.z)
+    result.z = aabb.max.z;
+  else if (bot.z < aabb.min.z)
+    result.z = aabb.min.z;
+  else
+    result.z = bot.z;
+  return result;
+}
+
+bool botInRangeOfCube(Nanobot bot, Cube aabb) {
+  var closestPoint = closestPointOnAABB(bot, aabb);
+  if (bot.manhattanDistanceToPoint(closestPoint) <= bot.signalRadius)
+    return true;
+  else
+    return false;
 }
 
 List<Nanobot> parseInput(List<String> puzzleInput) {
