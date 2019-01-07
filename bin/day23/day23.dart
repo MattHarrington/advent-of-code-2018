@@ -1,7 +1,21 @@
 //https://adventofcode.com/2018/day/23
 
-import 'dart:io';
+/*
+Strategy for part 1 is trivial.  For part 2, create an axis-aligned
+bounding box (AABB) cube which surrounds all nanobots.  Make its dimensions
+2 times a power of two so each cube side can be easily bisected.  Divide
+the AABB into 8 subvolumes and find one with most bots in range.  Further
+subdivide that subvolume until the AABB is a single point.  That point
+has the most nanobots in range for this form of the puzzle input.
+Might not work in the general case.
 
+There's currently a small bug when using the sample data for part 2.
+Bug is probably in AABB.compareBotsInRange() which should return AABB
+closest to origin in cases where 2 volumes are closest to an equal
+number of nanobots.
+ */
+
+import 'dart:io';
 import 'dart:math';
 
 const USE_SAMPLE_DATA = false;
@@ -14,13 +28,14 @@ class Point {
   Point.fromCoordinates(this.x, this.y, this.z);
 }
 
-class Cube {
+/// Axis-aligned Bounding Box (AABB)
+class AABB {
   Point min, max;
   int botsInRange = 0;
 
-  static Cube compareBotsInRange(Cube a, Cube b) {
+  static AABB compareBotsInRange(AABB a, AABB b) {
     if (a.botsInRange == b.botsInRange)
-//      throw StateError('Equal number of bots in range');
+      // TODO choose closest to origin, but for now return b
       return b;
     else if (a.botsInRange > b.botsInRange)
       return a;
@@ -28,42 +43,68 @@ class Cube {
       return b;
   }
 
-  List<Cube> getSubVolumes() {
-    int d = ((max.x - min.x) / 2).floor();
-    var subVolume1 = Cube(Point.fromCoordinates(min.x, min.y, min.z),
-        Point.fromCoordinates(min.x + d, min.y + d, min.z + d));
-    var subVolume2 = Cube(Point.fromCoordinates(min.x, min.y, min.z + d),
-        Point.fromCoordinates(min.x + d, min.y + d, min.z + d * 2));
-    var subVolume3 = Cube(Point.fromCoordinates(min.x, min.y + d, min.z),
-        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d));
-    var subVolume4 = Cube(Point.fromCoordinates(min.x, min.y + d, min.z + d),
-        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d * 2));
-    var subVolume5 = Cube(Point.fromCoordinates(min.x + d, min.y, min.z),
-        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d));
-    var subVolume6 = Cube(Point.fromCoordinates(min.x + d, min.y, min.z + d),
-        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d * 2));
-    var subVolume7 = Cube(Point.fromCoordinates(min.x + d, min.y + d, min.z),
-        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d));
-    var subVolume8 = Cube(
-        Point.fromCoordinates(min.x + d, min.y + d, min.z + d),
-        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d * 2));
-    var subVolumes = [
-      subVolume1,
-      subVolume2,
-      subVolume3,
-      subVolume4,
-      subVolume5,
-      subVolume6,
-      subVolume7,
-      subVolume8
-    ];
-    return subVolumes;
+  /// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/closest_point_aabb.html
+  Point closestPointToBot(Nanobot bot) {
+    var result = Point();
+    if (bot.x > max.x)
+      result.x = max.x;
+    else if (bot.x < min.x)
+      result.x = min.x;
+    else
+      result.x = bot.x;
+    if (bot.y > max.y)
+      result.y = max.y;
+    else if (bot.y < min.y)
+      result.y = min.y;
+    else
+      result.y = bot.y;
+    if (bot.z > max.z)
+      result.z = max.z;
+    else if (bot.z < min.z)
+      result.z = min.z;
+    else
+      result.z = bot.z;
+    return result;
   }
 
-  Cube(this.min, this.max);
+  /// Returns list of this cube divided into 8 subvolumes
+  List<AABB> getSubvolumes() {
+    int d = ((max.x - min.x) / 2).floor();
+    var subvolume1 = AABB(Point.fromCoordinates(min.x, min.y, min.z),
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d));
+    var subvolume2 = AABB(Point.fromCoordinates(min.x, min.y, min.z + d),
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d * 2));
+    var subvolume3 = AABB(Point.fromCoordinates(min.x, min.y + d, min.z),
+        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d));
+    var subvolume4 = AABB(Point.fromCoordinates(min.x, min.y + d, min.z + d),
+        Point.fromCoordinates(min.x + d, min.y + d * 2, min.z + d * 2));
+    var subvolume5 = AABB(Point.fromCoordinates(min.x + d, min.y, min.z),
+        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d));
+    var subvolume6 = AABB(Point.fromCoordinates(min.x + d, min.y, min.z + d),
+        Point.fromCoordinates(min.x + d * 2, min.y + d, min.z + d * 2));
+    var subvolume7 = AABB(Point.fromCoordinates(min.x + d, min.y + d, min.z),
+        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d));
+    var subvolume8 = AABB(
+        Point.fromCoordinates(min.x + d, min.y + d, min.z + d),
+        Point.fromCoordinates(min.x + d * 2, min.y + d * 2, min.z + d * 2));
+    var subvolumes = [
+      subvolume1,
+      subvolume2,
+      subvolume3,
+      subvolume4,
+      subvolume5,
+      subvolume6,
+      subvolume7,
+      subvolume8
+    ];
+    return subvolumes;
+  }
+
+  AABB(this.min, this.max);
 
   @override
-  toString() => '(${min.x}, ${min.y}, ${min.z}) (${max.x}, ${max.y}, ${max.z})';
+  toString() =>
+      'min: (${min.x}, ${min.y}, ${min.z}) max: (${max.x}, ${max.y}, ${max.z})';
 }
 
 class Nanobot {
@@ -76,18 +117,27 @@ class Nanobot {
     else if (a.signalRadius < b.signalRadius)
       return b;
     else
+      // TODO can this be improved? What to do in a tie?
       return b;
+  }
+
+  bool inRangeOf(AABB aabb) {
+    var closestPoint = aabb.closestPointToBot(this);
+    if (manhattanDistanceToPoint(closestPoint) <= signalRadius)
+      return true;
+    else
+      return false;
   }
 
   int numberBotsInRadius(List<Nanobot> nanobots) {
     int count = 0;
     for (var nanobot in nanobots) {
-      if (manhattanDistanceTo(nanobot) <= signalRadius) ++count;
+      if (manhattanDistanceToBot(nanobot) <= signalRadius) ++count;
     }
     return count;
   }
 
-  int manhattanDistanceTo(Nanobot other) {
+  int manhattanDistanceToBot(Nanobot other) {
     return (x - other.x).abs() + (y - other.y).abs() + (z - other.z).abs();
   }
 
@@ -135,6 +185,7 @@ main() {
 
   // Part 2
 
+  print('\nPart 2:');
   int minX = nanobots.fold(nanobots.first.x, (p, element) => min(p, element.x));
   int maxX = nanobots.fold(nanobots.first.x, (p, element) => max(p, element.x));
   int minY = nanobots.fold(nanobots.first.y, (p, element) => min(p, element.y));
@@ -146,69 +197,34 @@ main() {
   print('z range: $minZ to $maxZ = ${maxZ - minZ}');
   print('total coords: ${(maxX - minX) * (maxY - minY) * (maxZ - minZ)}');
 
-  int s = pow(2, 28); // 268435456
-  var startingCube =
-      Cube(Point.fromCoordinates(-s, -s, -s), Point.fromCoordinates(s, s, s));
-
-  for (var nanobot in nanobots) {
-    if (botInRangeOfCube(nanobot, startingCube)) ++startingCube.botsInRange;
-  }
-
-  var testCube =
-      Cube(Point.fromCoordinates(0, 0, 0), Point.fromCoordinates(16, 16, 16));
-  var testSubVolumes = testCube.getSubVolumes();
+  // Create AABB from s.  Choose power of 2 large enough to enclose all bots
+  int s = pow(2, 28); // 268435456.  -s to s then encloses all bots
+  var aabb =
+      AABB(Point.fromCoordinates(-s, -s, -s), Point.fromCoordinates(s, s, s));
 
   for (var i = 0; i <= 29; ++i) {
-    var subvolumes = startingCube.getSubVolumes();
+    var subvolumes = aabb.getSubvolumes();
     for (var subvolume in subvolumes) {
       for (var nanobot in nanobots) {
-        if (botInRangeOfCube(nanobot, subvolume)) ++subvolume.botsInRange;
+        if (nanobot.inRangeOf(subvolume)) ++subvolume.botsInRange;
       }
     }
-    // Choose subVolume with most bots
-    startingCube = subvolumes.reduce(Cube.compareBotsInRange);
+    // Choose subvolume with most bots
+    aabb = subvolumes.reduce(AABB.compareBotsInRange);
   }
 
-  print(startingCube);
-  var testbot = Nanobot(startingCube.min.x, startingCube.min.y, startingCube.min.z, 0);
+  print('\naabb = $aabb');
+
   var numBotsInRange = 0;
   for (var bot in nanobots) {
-    if (bot.manhattanDistanceToPoint(Point.fromCoordinates(12,12,12)) <= bot.signalRadius) ++numBotsInRange;
+    if (bot.manhattanDistanceToPoint(aabb.min) <= bot.signalRadius)
+      ++numBotsInRange;
   }
-  print('bots in range: $numBotsInRange');
+  print('Bots in range of aabb: $numBotsInRange');
 
-}
-
-/// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter1/closest_point_aabb.html
-Point closestPointOnAABB(Nanobot bot, Cube aabb) {
-  var result = Point();
-  if (bot.x > aabb.max.x)
-    result.x = aabb.max.x;
-  else if (bot.x < aabb.min.x)
-    result.x = aabb.min.x;
-  else
-    result.x = bot.x;
-  if (bot.y > aabb.max.y)
-    result.y = aabb.max.y;
-  else if (bot.y < aabb.min.y)
-    result.y = aabb.min.y;
-  else
-    result.y = bot.y;
-  if (bot.z > aabb.max.z)
-    result.z = aabb.max.z;
-  else if (bot.z < aabb.min.z)
-    result.z = aabb.min.z;
-  else
-    result.z = bot.z;
-  return result;
-}
-
-bool botInRangeOfCube(Nanobot bot, Cube aabb) {
-  var closestPoint = closestPointOnAABB(bot, aabb);
-  if (bot.manhattanDistanceToPoint(closestPoint) <= bot.signalRadius)
-    return true;
-  else
-    return false;
+  var partTwoAnswer = aabb.min.x + aabb.min.y + aabb.min.z; // dist to origin
+  print('partTwoAnswer: $partTwoAnswer');
+  if (!USE_SAMPLE_DATA) assert(partTwoAnswer == 119406340);
 }
 
 List<Nanobot> parseInput(List<String> puzzleInput) {
