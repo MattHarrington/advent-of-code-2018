@@ -11,6 +11,6 @@ void main() {
   });
   
   test('manhattan distance', () {
-    expect(manhattanDistance(a, b), 36);
+    expect(a.manhattanDistanceTo(b), 36);
   });
 }
